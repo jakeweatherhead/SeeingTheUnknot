@@ -11,7 +11,7 @@ dist_json    = 'GoogleDeepmind_hard_unknots_dist.json'
 knots_json   = 'SeeingTheUnknot_knots.json'
 unknots_json = 'SeeingTheUnknot_unknots.json'
 
-LOW_NC = 12 # NC: number of crossings
+LOWER_NC = 12 # NC: number of crossings
 UPPER_NC = 40
 CROSSING_GAP = 0.3
 STRAND_THICKNESS = 1.5
@@ -23,11 +23,11 @@ with open(dist_json, "r") as json_f:
 hard_unknots = {
     int(num_crossings): int(num_pd_codes)
     for num_crossings, num_pd_codes in hard_unknots.items()
-    if LOW_NC <= num_crossings \
+    if LOWER_NC <= num_crossings \
         and num_crossings <= UPPER_NC
 }
 
-for N in range(LOW_NC, UPPER_NC+1):
+for N in range(LOWER_NC, UPPER_NC+1):
     contribution = 0
     for sample_id in range(hard_unknots[N]+1):
         alternating = random.choice([True, False])
