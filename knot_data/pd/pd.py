@@ -1,39 +1,66 @@
 from spherogram import random_link
 from sage.knots.link import Link
 from PIL import Image
+import json
+import random
 
-# Input/Output Files
+# See run_pd.sh for the script that runs this code
+
 unknots_src  = 'GoogleDeepmind_hard_unknots.csv'
 dist_json    = 'GoogleDeepmind_hard_unknots_dist.json'
 knots_json   = 'SeeingTheUnknot_knots.json'
 unknots_json = 'SeeingTheUnknot_unknots.json'
 
-# Diagrammatic Crossing Count Bounds
-LOWER_DCC = 12
+LOWER_DCC = 12 # DCC: diagrammatic crossing count
 UPPER_DCC = 40
+CROSSING_GAP = 0.3
+STRAND_THICKNESS = 1.5
+CONTRIBUTION_LIMIT = 40_000
+
+with open(dist_json, "r") as json_f:
+    hard_unknots = json.load(json_f)
+
+hard_unknots = {
+    int(num_crossings): int(num_pd_codes)
+    for num_crossings, num_pd_codes in hard_unknots.items()
+    if LOWER_DCC <= num_crossings \
+        and num_crossings <= UPPER_DCC
+}
 
 for N in range(LOWER_DCC, UPPER_DCC+1):
-    L = random_link(
-        N, # Generate random link with N crossings
-        consistent_twist_regions=True
-    )
+    contribution = 0
+    for sample_id in range(hard_unknots[N]+1):
+        alternating = random.choice([True, False])
 
-    print(L)
-    pd = L.PD_code()
-    pd = [list(tup) for tup in pd]
-    
-    # If zero in PD code, increment all elements for Sage compatibility
-    if any(0 in row for row in pd):
-        pd = [[e+1 for e in row] for row in pd]
+        L = random_link(
+            crossings=N,
+            alternating=alternating, 
+            consistent_twist_regions=True,
+            max_tries=1_000
+        )
 
-    pd_str = str(pd).replace(' ', '')
+        pd = L.PD_code()
+        pd = [list(tup) for tup in pd]
+        
+        if any(0 in row for row in pd):
+            pd = [[e+1 for e in row] for row in pd]
 
-    # Plot
-    L = Link(pd)
-    p = L.plot(gap=0.3, thickness=1, color='black')
-    filename = f'test.png'
-    p.save(f"{filename}", dpi=300)
+        pd_str = str(pd).replace(' ', '')
 
-    img = Image.open(f"{filename}")
-    img_resized = img.resize((224, 224), Image.LANCZOS)
-    img_resized.save(f"test+{filename}")
+        L = Link(pd)
+        p = L.plot(
+            gap=CROSSING_GAP, 
+            thickness=STRAND_THICKNESS, 
+            color='black'
+        )
+        temp_file = f'temp.png'
+        p.save(f"{temp_file}", dpi=300)
+
+        img = Image.open(f"{temp_file}")
+        img_resized = img.resize((224, 224), Image.LANCZOS)
+        filename = f"{N}{'a' if alternating else 'n'}{sample_id}.png"
+        img_resized.save(f"../diagram/{N}/{filename}")
+        contribution += 1
+
+        if contribution == CONTRIBUTION_LIMIT:
+            break
