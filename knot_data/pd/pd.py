@@ -27,13 +27,13 @@ hard_unknots = {
         and num_crossings <= UPPER_NC
 }
 
-for N in range(LOWER_NC, UPPER_NC+1):
+for NC in range(LOWER_NC, UPPER_NC+1):
     contribution = 0
-    for sample_id in range(hard_unknots[N]+1):
+    for sample_id in range(hard_unknots[NC]+1):
         alternating = random.choice([True, False])
 
         L = random_link(
-            crossings=N,
+            crossings=NC,
             alternating=alternating, 
             consistent_twist_regions=True,
             max_tries=1_000
@@ -58,8 +58,8 @@ for N in range(LOWER_NC, UPPER_NC+1):
 
         img = Image.open(f"{temp_file}")
         img_resized = img.resize((224, 224), Image.LANCZOS)
-        filename = f"{N}{'a' if alternating else 'n'}{sample_id}.png"
-        img_resized.save(f"../diagram/{N}/{filename}")
+        filename = f"{NC}{'a' if alternating else 'n'}{sample_id}.png"
+        img_resized.save(f"../diagram/{NC}/{filename}")
         contribution += 1
 
         if contribution == CONTRIBUTION_LIMIT:
