@@ -4,15 +4,15 @@ from PIL import Image
 import json
 import random
 
-# See run_pd.sh for the script that runs this code
+# See run_pd.sh for the script used to run this code
 
 unknots_src  = 'GoogleDeepmind_hard_unknots.csv'
 dist_json    = 'GoogleDeepmind_hard_unknots_dist.json'
 knots_json   = 'SeeingTheUnknot_knots.json'
 unknots_json = 'SeeingTheUnknot_unknots.json'
 
-LOWER_DCC = 12 # DCC: diagrammatic crossing count
-UPPER_DCC = 40
+LOW_NC = 12 # NC: number of crossings
+UPPER_NC = 40
 CROSSING_GAP = 0.3
 STRAND_THICKNESS = 1.5
 CONTRIBUTION_LIMIT = 40_000 # Maximum contribution of any DCC to diagram dataset
@@ -23,11 +23,11 @@ with open(dist_json, "r") as json_f:
 hard_unknots = {
     int(num_crossings): int(num_pd_codes)
     for num_crossings, num_pd_codes in hard_unknots.items()
-    if LOWER_DCC <= num_crossings \
-        and num_crossings <= UPPER_DCC
+    if LOW_NC <= num_crossings \
+        and num_crossings <= UPPER_NC
 }
 
-for N in range(LOWER_DCC, UPPER_DCC+1):
+for N in range(LOW_NC, UPPER_NC+1):
     contribution = 0
     for sample_id in range(hard_unknots[N]+1):
         alternating = random.choice([True, False])
