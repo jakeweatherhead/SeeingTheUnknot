@@ -11,11 +11,11 @@ dist_json    = 'GoogleDeepmind_hard_unknots_dist.json'
 knots_json   = 'SeeingTheUnknot_knots.json'
 unknots_json = 'SeeingTheUnknot_unknots.json'
 
-LOWER_NC = 12 # NC: number of crossings
+LOWER_NC = 12  # NC: number of crossings
 UPPER_NC = 40
 CROSSING_GAP = 0.3
 STRAND_THICKNESS = 1.5
-CONTRIBUTION_LIMIT = 40_000 # Maximum contribution of any DCC to diagram dataset
+CONTRIBUTION_LIMIT = 40_000  # Maximum contribution of any DCC to diagram dataset
 
 with open(dist_json, "r") as json_f:
     hard_unknots = json.load(json_f)
