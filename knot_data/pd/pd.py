@@ -15,7 +15,7 @@ LOWER_NC = 12  # NC: number of crossings
 UPPER_NC = 40
 CROSSING_GAP = 0.3
 STRAND_THICKNESS = 1.5
-CONTRIBUTION_LIMIT = 40_000  # Maximum contribution of any DCC to diagram dataset
+CONTRIBUTION_LIMIT = 40_000  # Maximum contribution of any NC to diagram dataset
 
 with open(dist_json, "r") as json_f:
     hard_unknots = json.load(json_f)
