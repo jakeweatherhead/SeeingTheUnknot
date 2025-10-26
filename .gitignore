@@ -1,0 +1,5 @@
+.env
+*.pyc
+uv.lock
+.venv
+knot_data/pd/GoogleDeepmind_hard_unknots.csv
