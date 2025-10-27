@@ -145,7 +145,7 @@ def _classifier_head_mismatch(
         num_classes (int)      : label space cardinality
     """
     return (hasattr(model, 'fc')                       # has fully-connected layer
-            and isinstance(model.fc, Linear)  # fc layer is Linear
+            and isinstance(model.fc, Linear)           # fc layer is Linear
             and model.fc.out_features != num_classes)  # wrong number of classes
 
 
