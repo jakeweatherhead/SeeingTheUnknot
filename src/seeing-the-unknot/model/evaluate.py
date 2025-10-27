@@ -96,7 +96,7 @@ def evaluate(
         duration=time.time() - ts,
         accuracy=accuracy,
         loss=loss,
-        correct_count=(tp + tn),
+        correct_count=(tp+tn),
         tn=tn,
         fp=fp,
         tp=tp,
