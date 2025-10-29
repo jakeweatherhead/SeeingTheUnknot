@@ -80,7 +80,7 @@ class Trial:
             )
 
             # TODO Save epoch zero results
-        
+
             train_results, val_results = train(
                 device=self.device,
                 model=self.model, 
