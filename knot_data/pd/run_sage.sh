@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# e.g. ./run_sage.sh pd.py
+# >>> ./run_sage.sh pd.py
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 <file_to_run.py>"
