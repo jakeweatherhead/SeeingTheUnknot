@@ -31,7 +31,8 @@ def build_model(
     config: config.Config,
     device: device
 ) -> Module:
-    """Download pretrained weights from Timm libary if not locally present
+    """
+    Download pretrained weights from Timm libary if not locally present
     else, load pretrained weights from a local directory.
     
     Args:
@@ -61,7 +62,8 @@ def save_model(
     results_dir: Path, 
     metrics: Dict[str, float],
 ) -> Path:
-    """Save model and return path to the newly saved weights.
+    """
+    Save model and return path to the newly saved weights.
     
     Args:
         model      : PyTorch model instance
@@ -87,7 +89,8 @@ def load_model(
     model: Module, 
     model_path: str
 ) -> Module:
-    """Return model instance loaded with local pretrained weights
+    """
+    Return model instance loaded with local pretrained weights
     
     Args:
         model     : PyTorch model instance
@@ -108,7 +111,8 @@ def load_model(
 def ckpt_paths(
     results_dir: Path
 ) -> list[Path]:
-    """Returns a list of paths to all model checkpoint files saved in the current Trial.
+    """
+    Returns a list of paths to all model checkpoint files saved in the current Trial.
     
     Args:
         results_dir: root directory of all model checkpoints saved in the current Trial.
@@ -118,7 +122,8 @@ def ckpt_paths(
 def _get_local_weights_path(
     config: config.Config
 ) -> Path:
-    """Return system Path to local, pretrained weights.
+    """
+    Returns a system Path to local, pretrained weights.
     
     Args:
         config: global configuration option
@@ -133,7 +138,8 @@ def _classifier_head_mismatch(
     model: Module, 
     num_classes: int = 2
 ) -> bool:
-    """Return True if model has a fully-connected layer, and the 
+    """
+    Return True if model has a fully-connected layer, and the 
     fully-connected layer is an instance of Linear and the label 
     space cardinality does not equal two (non-trivial knots, unknots)
     else False.
