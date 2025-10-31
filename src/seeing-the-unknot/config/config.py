@@ -23,8 +23,8 @@ import subprocess
 
 @dataclass(frozen=True, kw_only=True)
 class Config(ABC):
-    num_classes:           int = 2  # Unknot and Non-Trivial Knot
-    seed:                  int = 16011997
+    num_classes:           int = C.NUM_CLASSES
+    seed:                  int = C.GLOBAL_SEED
     timm_model_path:       str = "<PRETRAINED-WEIGHTS-PATH>"
     timm_weights_filename: str = "pytorch_model.bin"
 
