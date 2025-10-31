@@ -18,7 +18,7 @@
 from schema.dataset import KnotDataset
 from typing import Dict, Any
 from pathlib import Path
-from dataclasses import replace, asdict
+from dataclasses import replace
 
 import os
 import torch
