@@ -43,13 +43,14 @@ def set_random_seeds() -> None:
 def get_results_dir(
     run_type: str
 ) -> Path:
-    """E.g. 'sweep_6_JUL_2008_21:15' OR 'trial_8_JUN_2025_18:30'
+    """
+    E.g. 'sweep_6_JUL_2008_21:15' OR 'trial_8_JUN_2025_18:30'
     
     Args: 
         run_type: 'sweep' OR 'trial'
 
     Returns:
-        Path: path to results directory.
+        path: path to results directory.
     """
     return Path(
         f"{run_type}_" 
