@@ -21,7 +21,7 @@ from torch.nn import Module, Linear
 
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict
 from config import config
 
 import timm
@@ -42,11 +42,9 @@ def build_model(
         local_weights_path: Path = _get_local_weights_path(config)
         use_local: bool = local_weights_path.exists() 
         
-        model = timm.create_model(
-            model_name=config.model_name, 
-            pretrained=(not use_local), # download weights if not locally present
-            num_classes=config.num_classes
-        )
+        model = timm.create_model(model_name=config.model_name, 
+                                  pretrained=(not use_local), # download weights if not locally present
+                                  num_classes=config.num_classes)
 
         if use_local:
             _load_local_weights(model, local_weights_path)
@@ -79,7 +77,7 @@ def save_model(
         weights_path = results_dir / filename
         torch.save(model.state_dict(), weights_path)
 
-        return weights_path # reference for testing phase
+        return weights_path  # reference for testing phase
         
     except Exception as e:
         error_msg = f"Model Utils: save_model() Error saving model: {e}"
@@ -92,8 +90,8 @@ def load_model(
     """Return model instance loaded with local pretrained weights
     
     Args:
-        model (torch.nn.Module): PyTorch model instance
-        model_path (str)       : path to pretrained weights
+        model     : PyTorch model instance
+        model_path: path to pretrained weights
     """
     try:
         model_path = Path(model_path)
@@ -123,7 +121,7 @@ def _get_local_weights_path(
     """Return system Path to local, pretrained weights.
     
     Args:
-        config (config.Config): global configuration set
+        config: global configuration option
     """
     return Path(
         config.timm_model_path, 
@@ -135,14 +133,14 @@ def _classifier_head_mismatch(
     model: Module, 
     num_classes: int = 2
 ) -> bool:
-    """Return True if model has a fully-connected layer,
-    and the fully-connected layer is an instance of Linear
-    and the label space cardinality does not equal two (non-trivial knots, unknots)
+    """Return True if model has a fully-connected layer, and the 
+    fully-connected layer is an instance of Linear and the label 
+    space cardinality does not equal two (non-trivial knots, unknots)
     else False.
 
     Args:
-        model (torch.nn.Module): instance of a PyTorch model
-        num_classes (int)      : label space cardinality
+        model      : instance of a PyTorch model
+        num_classes: label space cardinality
     """
     return (hasattr(model, 'fc')                       # has fully-connected layer
             and isinstance(model.fc, Linear)           # fc layer is Linear
@@ -153,14 +151,15 @@ def _classifier_reset_required(
     model: Module, 
     num_classes: int = 2
 ) -> bool:
-    """Return False if model has a fully-connected layer,
+    """
+    Return False if model has a fully-connected layer,
     and the fully-connected layer is an instance of Linear
-    and the label space cardinality does not equal two (non-trivial knots, unknots)
+    and the label space cardinality equals two (non-trivial knots, unknots)
     else True.
 
     Args:
-        model (torch.nn.Module): instance of a PyTorch model
-        num_classes (int)      : label space cardinality
+        model      : instance of a PyTorch model
+        num_classes: label space cardinality
     """
     return not (hasattr(model, 'fc')                     
                 and isinstance(model.fc, Linear) 
@@ -170,11 +169,12 @@ def _load_local_weights(
     model: Module,
     path: Path,
 ) -> None:
-    """Load and apply local, pretrained weights to model instance
+    """
+    Load and apply local, pretrained weights to model instance
     
     Args:
-        model (torch.nn.Module): PyTorch model instance
-        path (Path): path to local, pretrained weights
+        model: PyTorch model instance
+        path : path to local, pretrained weights
     """
     try:
         local_state_dict = torch.load(path, map_location='cpu')
@@ -200,7 +200,7 @@ def _adapt_classifier(
     matching the label space cardinality of two.
     
     Args:
-        model: PyTorch model instance
+        model      : PyTorch model instance
         num_classes: label space cardinality
     """
     try:
