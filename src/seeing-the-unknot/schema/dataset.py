@@ -40,7 +40,8 @@ class KnotDataset(Dataset):
         self, 
         index: int
     ) -> tuple[PIL.Image, int]:
-        """Loads and returns the image-label pair at the specified index.
+        """
+        Loads and returns the image-label pair at the specified index.
         Applies the configured transforms if provided.
         """
         image_path = self.image_paths[index]

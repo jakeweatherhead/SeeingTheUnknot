@@ -196,7 +196,8 @@ def _adapt_classifier(
     model: Module, 
     num_classes: int = 2
 ) -> None:
-    """Replace the fully-connected layer with a new Linear instance
+    """
+    Replace the fully-connected layer with a new Linear instance
     matching the label space cardinality of two.
     
     Args:
