@@ -28,7 +28,6 @@ from multiprocessing import get_context
 from spherogram import random_link
 from sage.knots.link import Link
 
-unknots_src  = 'GoogleDeepmind_hard_unknots.csv'
 dist_json    = 'GoogleDeepmind_hard_unknots_dist.json'
 knots_json   = 'SeeingTheUnknot_non_trivial_knots.json'
 
