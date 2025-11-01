@@ -21,6 +21,7 @@ from pathlib import Path
 from dataclasses import replace
 
 import os
+import json
 import torch
 from torch import optim
 from torch import device
@@ -33,8 +34,9 @@ from model.train import train
 from model.evaluate import evaluate
 
 from config import config
-from utils import utils, cam_utils, data_utils, model_utils
 import constants.constant as C
+from datetime import datetime, timezone
+from utils import utils, cam_utils, data_utils, model_utils
 
 class Trial:
     def __init__(self) -> None:
@@ -293,14 +295,14 @@ class Trial:
         )
 
         # Create JSON results file
-        json_f: str = f"{results_dir}/{self.trial_id}_results.json"
+        self.json_f: str = f"{results_dir}/{self.trial_id}_results.json"
 
         with open(f"{results_dir}/{self.trial_id}_results.json", 'w') as f:
             data = json.load(f)
 
         data: dict = {f"{self.trial_dir}_results": {}}
 
-        with open(json_f, 'w') as f_out:
+        with open(self.json_f, 'w') as f_out:
             json.dump(data, f_out, indent=4)
 
         # Create saliency map directories
