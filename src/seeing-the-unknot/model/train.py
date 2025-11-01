@@ -46,19 +46,20 @@ def train(
     results_dir: Path
 ) -> tuple[list[TrainResult], list[EvalResult]]:
     train_results: list[TrainResult] = []
-    val_results: list[EvalResult] = []
-    losses: list[float] = []
-    accs: list[float] = []
-    patience: int = C.PATIENCE
-    best_val_accuracy: float = float('-inf')
+    val_results: list[EvalResult]    = []
+    losses: list[float]              = []
+    accs: list[float]                = []
+    patience: int                    = C.PATIENCE
+    best_val_accuracy: float         = float('-inf')
+    n_train: int                     = len(dataloaders['train'].dataset)
 
     model.train()
 
     for epoch_idx in range(config.num_epochs):
-        ts = time.time()
-        running_loss: float = 0.0
-        running_corrects: int = 0
-        samples_processed: int = 0
+        ts                = time.time()
+        total_loss: float = 0.0
+        n_correct: int    = 0
+        n_processed: int  = 0
 
         for inputs, labels in dataloaders['train']:
             inputs = inputs.to(device, non_blocking=True)
