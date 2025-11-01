@@ -71,7 +71,7 @@ def evaluate(
             
             outputs = model(images)
             loss = criterion(outputs, labels)
-            _, predictions = torch.max(outputs.data, (ROW_DIMENSION := 1))
+            _, predictions = torch.max(outputs.data, (ROW_IDX := 1))
             
             total_loss += (loss := loss.item())
             
@@ -96,7 +96,7 @@ def evaluate(
         duration=time.time() - ts,
         accuracy=accuracy,
         loss=loss,
-        correct_count=(tp+tn),
+        n_correct=(tp+tn),
         tn=tn,
         fp=fp,
         tp=tp,
