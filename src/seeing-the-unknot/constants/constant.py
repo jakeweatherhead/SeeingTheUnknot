@@ -18,6 +18,7 @@
 import pyhopper
 
 DPI: int = 300
+NUM_EPOCHS: int = 30
 NUM_CLASSES: int = 2
 KNOT_LABEL: int = 0    # negative instance
 UNKNOT_LABEL: int = 1  # positive instance
