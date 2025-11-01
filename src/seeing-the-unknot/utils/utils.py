@@ -15,11 +15,13 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+import json
 import torch
 import random
 from pathlib import Path
 from datetime import datetime
 import constants.constant as C
+from schema.result import TrainResult, EvalResult
 
 
 def format_time_delta(secs: float) -> str:
@@ -69,6 +71,78 @@ def safe_divide(n: int, d: int) -> float:
         d: denominator.
 
     Returns:
-        float: n / d, or 0.0 if d equals zero to avoid ZeroDivisionError
+        float: n / d, or 0.0 if d equals zero to avoid ZeroDivisionError.
     """
     return n / d if d else 0.0
+
+def log_results(
+    results_json: Path,
+    train_results: list[TrainResult],
+    eval_results: list[EvalResult]
+) -> None:
+    if train_results and len(train_results) == 1:
+        log_epoch_results(
+            results_json, 
+            train_results, 
+            eval_results, 
+            res_id=0
+        )
+    
+    elif not train_results: # test results
+        log_epoch_results(
+            results_json, 
+            None, 
+            eval_results, 
+            res_id=0
+        )
+
+    else:
+        for e_id in range(1, C.NUM_EPOCHS):
+            log_epoch_results(
+                results_json, 
+                train_results, 
+                eval_results, 
+                res_id=e_id
+            )
+
+
+def log_epoch_results(
+    results_json: Path,
+    train_results: list[TrainResult] | None, 
+    eval_results: list[EvalResult],
+    res_id: int,
+) -> None:
+    # Get current file state
+    with open(results_json, 'r') as f_in:
+        data = json.load(f_in)
+
+    # Construct file update
+    root = data[results_json.stem][f'epoch_{res_id}']
+
+    if train_results:
+        root['train']['duration']      = train_results[res_id].duration
+        root['train']['mean_accuracy'] = train_results[res_id].mean_accuracy
+        root['train']['mean_loss']     = train_results[res_id].mean_loss
+
+    label: str = 'val' if train_results else 'test'
+
+    root[label]['duration']    = eval_results[res_id].duration
+    root[label]['accuracy']    = eval_results[res_id].accuracy
+    root[label]['loss']        = eval_results[res_id].loss
+    root[label]['n_correct']   = eval_results[res_id].n_correct
+    root[label]['tp']          = eval_results[res_id].tp
+    root[label]['fn']          = eval_results[res_id].fn
+    root[label]['tn']          = eval_results[res_id].tn
+    root[label]['fp']          = eval_results[res_id].fp
+    root[label]['precision']   = eval_results[res_id].precision
+    root[label]['recall']      = eval_results[res_id].recall
+    root[label]['f1_score']    = eval_results[res_id].f1_score
+    root[label]['specificity'] = eval_results[res_id].specificity
+
+    # Write file update
+    with open(results_json, 'w') as f_out:
+        json.dump(
+            data,
+            f_out,
+            indent=4
+        )
