@@ -81,7 +81,11 @@ class Trial:
                 criterion=self.criterion
             )
 
-            # TODO Save epoch zero results
+            utils.log_results( # Log epoch zero results
+                results_json=self.json_f, 
+                train_results=[train_result], 
+                eval_results=[val_result]
+            )
 
             train_results, val_results = train(
                 device=self.device,
@@ -94,7 +98,11 @@ class Trial:
                 results_dir=self.trial_dir
             )
 
-            # TODO Save train and validation results (epoch > 0)
+            utils.log_results(
+                results_json=self.json_f, 
+                train_results=train_results, 
+                eval_results=val_results
+            )
 
             if self.run_type == 'trial':
                 data_utils.save_curve_plots(
@@ -265,7 +273,11 @@ class Trial:
                 criterion=self.criterion
             )
             
-            # TODO Log test results
+            utils.log_results(
+                results_json=self.json_f, 
+                train_results=None, 
+                eval_results=test_result
+            )
 
 
     def _get_device(self) -> device:
