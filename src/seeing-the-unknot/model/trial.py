@@ -279,3 +279,33 @@ class Trial:
         return torch.nn.CrossEntropyLoss(
             label_smoothing=self.config.label_smoothing
         )
+    
+    def _get_trial_id(self) -> str:
+        """Creates unique trial identifier in trial_DD/MMM/YYYY-HH:MM:SS format."""
+        dt = datetime.now(timezone.utc).strftime("%d/%b/%Y-%H:%M:%S").upper()
+        return f"trial_{dt}"
+    
+    def _create_results_assets(self) -> None:
+        # Make results directory for this Trial
+        os.mkdir(
+            (results_dir := self.config.get_git_root() / self.trial_id), 
+            exist_ok=True
+        )
+
+        # Create JSON results file
+        json_f: str = f"{results_dir}/{self.trial_id}_results.json"
+
+        with open(f"{results_dir}/{self.trial_id}_results.json", 'w') as f:
+            data = json.load(f)
+
+        data: dict = {f"{self.trial_dir}_results": {}}
+
+        with open(json_f, 'w') as f_out:
+            json.dump(data, f_out, indent=4)
+
+        # Create saliency map directories
+        os.mkdir(smap_dir := results_dir / 'smaps', exist_ok=True)
+        os.mkdir(smap_dir / 'TP', exist_ok=True)
+        os.mkdir(smap_dir / 'FN', exist_ok=True)
+        os.mkdir(smap_dir / 'TN', exist_ok=True)
+        os.mkdir(smap_dir / 'FP', exist_ok=True)
