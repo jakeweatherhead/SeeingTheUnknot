@@ -66,6 +66,7 @@ def _worker(task):
     try:
         L = random_link(
             crossings=NC,
+            num_components=1, # Prevent n-component links (n >= 2)
             alternating=alternating,
             consistent_twist_regions=True,
             max_tries=MAX_RETRIES
