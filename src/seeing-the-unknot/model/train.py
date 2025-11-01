@@ -61,34 +61,35 @@ def train(
         n_correct: int    = 0
         n_processed: int  = 0
 
-        for inputs, labels in dataloaders['train']:
-            inputs = inputs.to(device, non_blocking=True)
-            labels = labels.to(device, non_blocking=True)
+        for images, labels in dataloaders['train']:
+            images = images.to(device)
+            labels = labels.to(device)
 
             optimizer.zero_grad()
 
-            outputs = model(inputs)
+            outputs = model(images)
 
-            _, predictions = torch.max(outputs, (ROW_DIMENSION := 1))
+            _, predictions = torch.max(outputs, (ROW_IDX := 1))
+
             loss: float = criterion(outputs, labels)
             loss.backward()
+
             optimizer.step()
 
-            running_loss += loss.item() * inputs.size(0)
-            running_corrects += torch.sum(predictions == labels.data).item()
-            samples_processed += inputs.size(0)
+            total_loss   += loss.item() * images.size(0)
+            n_correct    += torch.sum(predictions == labels.data).item()
+            n_processed  += images.size(0)
 
-        train_size: int = len(dataloaders['train'].dataset)
-        losses.append(final_loss := running_loss / train_size)
-        accs.append(final_acc := running_corrects / train_size)
+        accs.append(acc := n_correct / n_train)
+        losses.append(loss := total_loss / n_train)
 
-        train_result: TrainResult = TrainResult(
-            duration=time.time() - ts,
-            final_accuracy=final_acc,
-            final_loss=final_loss
+        train_results.append(
+            TrainResult(
+                duration=time.time() - ts,
+                mean_accuracy=acc,
+                mean_loss=loss
+            )        
         )
-
-        train_results.append(train_result)
 
         val_result: EvalResult = evaluate(
             model=model,
