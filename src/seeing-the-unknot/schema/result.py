@@ -20,14 +20,14 @@ from dataclasses import dataclass
 
 @dataclass
 class TrainResult:
-    """Stores training results"""
+    """Stores training result for a single epoch"""
     duration: float
-    final_accuracy: float
-    final_loss: float
+    mean_accuracy: float
+    mean_loss: float
 
 @dataclass
 class EvalResult:
-    """Stores validation OR test results.
+    """Stores validation (for a single epoch) OR test results.
     
     Confusion matrix bins:
         True Positives  (tp): Unknots classified as unknots.
@@ -38,7 +38,7 @@ class EvalResult:
     duration: float
     accuracy: float
     loss: float
-    correct_count: int 
+    n_correct: int 
     tp: int             
     fn: int             
     tn: int             
