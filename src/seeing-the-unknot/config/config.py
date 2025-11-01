@@ -53,7 +53,6 @@ class Config(ABC):
 class CNNConfig(Config):
     learning_rate:       float = 9e-05
     batch_size:            int = 8
-    num_epochs:            int = 3
     weight_decay:        float = 2e-06
     eps:                 float = 1e-09
     optimizer:             str = "adam"
@@ -75,7 +74,6 @@ class CNNConfig(Config):
 class ViTConfig(Config):
     learning_rate:       float = 3e-05
     batch_size:            int = 8
-    num_epochs:            int = 32
     weight_decay:        float = 0.05
     eps:                 float = 4e-09
     optimizer:             str = "adamw"
