@@ -1,91 +1,148 @@
-from sage.knots.link import Link
-from PIL import Image
+import os
 import ast
+import gc
+import json
+import random
+import argparse
+import tempfile
+import multiprocessing as mp
+from PIL import Image
+from sage.knots.link import Link
 
-pd=[[1,27,2,26],[2,10,3,9],[24,3,25,4],[4,17,5,18],[5,23,6,22],[19,7,20,6],[7,19,8,18],[8,23,9,24],[27,11,28,10],[13,1,14,34],[31,14,32,15],[15,32,16,33],[25,16,26,17],[33,30,34,31],[21,20,22,21],[28,11,29,12],[29,13,30,12]]
-
-# pd = ast.literal_eval(pd)
-L = Link(pd)
-
-p = L.plot(gap=0.25, thickness=1.5, color='black')
-filename = f'ncs19pokepoke.png'
-p.save(f"{filename}", dpi=300)
-
-# Resize
-# img = Image.open(f"{filename}")
-# img_resized = img.resize((700, 700), Image.LANCZOS)
-# img_resized.save(f"{filename}")
-
-# import ast
-# import json
-
-# unknots_src  = 'GoogleDeepmind_hard_unknots.csv'
-# unknots_out  = 'SeeingTheUnknot_unknots.json'
-
-# id = {nc: 1 for nc in range(20, 41)}
-
-# with open(unknots_src, 'r', encoding='utf-8') as f, \
-#     open(unknots_out, 'r+', encoding='utf-8') as out:
-#     count = 0
-#     for line in f:
-#         pd = line.strip()
-#         pd = ast.literal_eval(pd)
-#         pd = ast.literal_eval(pd)
-#         nc = len(pd)
-
-#         # if 20 <= nc and nc <= 40:
-#         if nc == 32:
-#             data = json.load(out)
-#             data["unknots"][str(nc)][f"{nc}_{id[nc]}"] = pd
-#             id[nc] += 1
-#             out.seek(0)
-#             json.dump(data, out, indent=4)
-#             out.truncate()
-#             count += 1
-        
-#         if count == 2:
-#             break
+try:
+    LANCZOS = Image.Resampling.LANCZOS
+    BICUBIC = Image.Resampling.BICUBIC
+except AttributeError:
+    LANCZOS = Image.LANCZOS
+    BICUBIC = Image.BICUBIC
 
 
+def _seed_rng(knot_id: str):
+    try:
+        pid = os.getpid()
+        h = hash((pid, knot_id))
+        random.seed(h & 0xFFFFFFFF)
+    except Exception:
+        random.seed()
 
 
+def _render_and_augment(knot_id: str, pd_code, output_dir: str):
+    _seed_rng(knot_id)
+    os.makedirs(output_dir, exist_ok=True)
+
+    L = Link(pd_code)
+    tmp = tempfile.NamedTemporaryFile(
+        prefix=f"{knot_id}_",
+        suffix=".png", 
+        delete=False
+    )
+    tmp_png_path = tmp.name
+    tmp.close()
+
+    try:
+        p = L.plot(gap=0.3, thickness=1.4, color='black')
+        p.save(tmp_png_path, dpi=300)
+        del p
+
+        with Image.open(tmp_png_path) as img:
+            img_resized = img.resize((224, 224), LANCZOS)
+
+            original_width, original_height = img_resized.size
+            ZOOM_BOUNDS = (1.4, 2.0)
+            ROTATE_BOUNDS = (30, 330)
+            zoom_coefficient = random.uniform(*ZOOM_BOUNDS)
+            rotate_angle = random.uniform(*ROTATE_BOUNDS)
+
+            super_scale_factor = 4.0
+            super_size = (
+                int(original_width * super_scale_factor),
+                int(original_height * super_scale_factor)
+            )
+            super_img = img_resized.resize(super_size, LANCZOS)
+
+            rotated_super = super_img.rotate(
+                rotate_angle,
+                expand=True,
+                fillcolor='white',
+                resample=BICUBIC
+            )
+
+            target_width = int(rotated_super.size[0] / super_scale_factor / zoom_coefficient)
+            target_height = int(rotated_super.size[1] / super_scale_factor / zoom_coefficient)
+            final_rotated = rotated_super.resize((target_width, target_height), LANCZOS)
+
+            canvas   = Image.new('RGB', (original_width, original_height), 'white')
+            x_offset = max(0, (original_width - target_width) // 2)
+            y_offset = max(0, (original_height - target_height) // 2)
+            canvas.paste(final_rotated, (x_offset, y_offset))
+
+            out_path = os.path.join(
+                output_dir,
+                f"{knot_id}_zoom{zoom_coefficient:.1f}_rot{rotate_angle:.1f}.png"
+            )
+            canvas.save(out_path, format='PNG', optimize=False, compress_level=1)
+
+            del super_img, rotated_super, final_rotated, canvas, img_resized
+
+        del L
+        return out_path
+    finally:
+        try:
+            os.remove(tmp_png_path)
+        except Exception:
+            pass
+        gc.collect()
 
 
+def _read_jobs(source_json: str, output_dir: str):
+    with open(source_json, 'r') as f:
+        data = json.load(f)
+
+    # category     = "unknots" OR "non-trivial-knots" depending on source file
+    # crossing_num = [20, 40]
+    for category, crossings_dict in data.items():
+        for crossing_num, knots_dict in crossings_dict.items():
+            for knot_id, pd_code_str in knots_dict.items():
+                pd_code = ast.literal_eval(pd_code_str)
+                yield (knot_id, pd_code, output_dir)
+
+def _run_one(job):
+    knot_id, pd_code, outdir = job
+    return _render_and_augment(knot_id, pd_code, outdir)
+
+def process_pd_codes(source_file: str, output_dir: str, n_workers: int):
+    jobs = _read_jobs(source_file, output_dir)
+
+    print(f"[{source_file}] Streaming jobs -> {output_dir} with {n_workers} workers…")
+
+    ctx = mp.get_context()
+    with ctx.Pool(processes=n_workers, maxtasksperchild=200) as pool:
+        done = 0
+        for out_path in pool.imap_unordered(_run_one, jobs, chunksize=4):
+            done += 1
+            if done % 50 == 0:
+                print(f"  [{source_file}] {done}… last saved: {out_path}")
+
+    print(f"[{source_file}] Completed {done} jobs.")
 
 
+def main():
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
+    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+    os.environ.setdefault("MKL_NUM_THREADS", "1")
+    os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
+    os.environ.setdefault("SAGE_NUM_THREADS", "1")
+    os.environ.setdefault("MPLBACKEND", "Agg")
+
+    try:
+        mp.set_start_method("fork", force=True)
+    except RuntimeError:
+        pass
+
+    src: str = "SeeingTheUnknot_non_trivial_knots.json"
+    out: str = "/home/jake/Personal/SeeingTheUnknot/knot_data/diagram/knot/"
+    process_pd_codes(src, out, n_workers=os.cpu_count - 4)
 
 
-# import ast, json, os
-
-# unknots_src  = 'GoogleDeepmind_hard_unknots.csv'
-# unknots_out  = 'SeeingTheUnknot_unknots.json'
-
-# if os.path.exists(unknots_out) and os.path.getsize(unknots_out) > 0:
-#     with open(unknots_out, 'r', encoding='utf-8') as out:
-#         data = json.load(out)
-# else:
-#     data = {"unknots": {str(n): {} for n in range(20, 41)}}
-
-# id_counter = {n: len(data["unknots"][str(n)]) + 1 for n in range(20, 41)}
-
-# count = 0
-# with open(unknots_src, 'r', encoding='utf-8') as f:
-#     for line in f:
-#         s = line.strip()
-#         if not s:
-#             continue
-#         try:
-#             pd = ast.literal_eval(ast.literal_eval(s))
-#             nc = len(pd)
-#         except Exception:
-#             continue
-
-#         if 20 <= nc and nc <= 40:
-#             k = f"{nc}_{id_counter[nc]}"
-#             data["unknots"][str(nc)][k] = str(pd).replace(' ', '')
-#             id_counter[nc] += 1
-#             count += 1
-#             print(count)
-
-# with open(unknots_out, 'w', encoding='utf-8') as out:
-#     json.dump(data, out, indent=4)
+if __name__ == "__main__":
+    main()
