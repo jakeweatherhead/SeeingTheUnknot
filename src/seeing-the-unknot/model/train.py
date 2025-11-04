@@ -43,7 +43,7 @@ def train(
     scheduler: _LRScheduler,
     config: config.Config,    
     criterion: Module,
-    results_dir: Path
+    trial_dir: Path
 ) -> tuple[list[TrainResult], list[EvalResult]]:
     train_results: list[TrainResult] = []
     val_results: list[EvalResult]    = []
@@ -106,7 +106,7 @@ def train(
 
             weights_path = model_utils.save_model(
                 model=model,
-                results_dir=results_dir,
+                trial_dir=trial_dir,
                 metrics={'val_acc': best_val_accuracy},
             )
         else:
