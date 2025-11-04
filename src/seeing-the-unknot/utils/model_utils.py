@@ -59,7 +59,7 @@ def build_model(
 
 def save_model(
     model: Module,
-    results_dir: Path, 
+    trial_dir: Path, 
     metrics: Dict[str, float],
 ) -> Path:
     """
@@ -67,19 +67,13 @@ def save_model(
     
     Args:
         model      : PyTorch model instance
-        results_dir: path to sweep/trial results directory
+        trial_dir: path to sweep/trial results directory
         metrics    : contains validation accuracy of model to save
     """
     try:
-        pth_file_basename = f"val_acc{metrics['val_acc']:.3f}".replace('.', '_')
-        model_dir = f"{datetime.now().strftime('%H_%M_%S')}_{pth_file_basename}"
-        results_dir = results_dir / model_dir
-        results_dir.mkdir(parents=True, exist_ok=True)
-        filename = pth_file_basename + ".pth"
-        weights_path = results_dir / filename
+        filename = f"val_acc{metrics['val_acc']:.3f}".replace('.', '_') + ".pth"
+        weights_path = trial_dir / filename
         torch.save(model.state_dict(), weights_path)
-
-        return weights_path  # reference for testing phase
         
     except Exception as e:
         error_msg = f"Model Utils: save_model() Error saving model: {e}"
