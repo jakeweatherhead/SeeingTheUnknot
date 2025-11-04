@@ -31,7 +31,7 @@ from sage.knots.link import Link
 dist_json    = 'GoogleDeepmind_hard_unknots_dist.json'
 knots_json   = 'SeeingTheUnknot_non_trivial_knots.json'
 
-LOWER_NC           = 20
+LOWER_NC           = 36
 UPPER_NC           = 40
 MAX_RETRIES        = 100
 CONTRIBUTION_LIMIT = 20_000
@@ -40,6 +40,9 @@ PROCESSES          = os.cpu_count() - 3
 MAXTASKSPERCHILD   = 100
 CHUNKSIZE          = 8
 FLUSH_EVERY        = 500
+
+# Maximum attempts per crossing number before giving up
+MAX_ATTEMPTS_PER_NC = 100_000
 
 _GLOBAL = {"seen": None, "lock": None}
 
@@ -59,14 +62,13 @@ def _worker(task):
     seen = _GLOBAL["seen"]
     lock = _GLOBAL["lock"]
 
-    NC, sample_id, alternating = task
-    file_key = f"{NC}{'a' if alternating else 'n'}{sample_id}"
+    NC, attempt_id, alternating = task
     cpd = None
 
     try:
         L = random_link(
             crossings=NC,
-            num_components=1, # Prevent n-component links (n >= 2)
+            num_components=1,  # Prevent n-component links (n >= 2)
             alternating=alternating,
             consistent_twist_regions=True,
             max_tries=MAX_RETRIES
@@ -74,7 +76,15 @@ def _worker(task):
 
         pd = L.PD_code()
 
-        if any(0 in row for row in pd): # for SageMath compatibility
+        nc = len(pd)
+        
+        if nc != NC:
+            del L
+            gc.collect()
+            return (0, NC, None, 
+                    f"REJECTED: Crossing mismatch ({nc} vs requested {NC})")
+
+        if any(0 in row for row in pd):  # for SageMath compatibility
             pd = [[e + 1 for e in row] for row in pd]
 
         cpd = _canonical_pd(pd)
@@ -82,23 +92,23 @@ def _worker(task):
 
         with lock:
             if key in seen:
-                return (0, NC, file_key, None, "duplicate PD (skipped)")
+                return (0, NC, None, "duplicate PD (skipped)")
             seen[key] = 1
 
         try:
             jp = L.jones_polynomial()
         except Exception as _e:
-            return (3, NC, file_key, None, f"JonesPolynomialError: {_e}")
+            return (3, NC, None, f"JonesPolynomialError: {_e}")
 
         if jp == 1:
             del L
             gc.collect()
-            return (1, NC, file_key, None, "Unknot detected (Jones=1)")
+            return (1, NC, None, "Unknot detected (Jones=1)")
 
         del L, pd
         gc.collect()
 
-        return (2, NC, file_key, cpd, "non-trivial PD stored")
+        return (2, NC, cpd, f"non-trivial PD stored (actual crossings: {nc})")
 
     except Exception as e:
         try:
@@ -106,16 +116,21 @@ def _worker(task):
         except Exception:
             pass
         gc.collect()
-        return (3, NC, file_key, None, f"{type(e).__name__}: {e}")
+        return (3, NC, None, f"{type(e).__name__}: {e}")
 
 def _flush_to_json(entries, all_knots):
     if not entries:
         return 0
 
     count = 0
-    for NC, file_key, cpd in entries:
+    for NC, cpd in entries:
         nc_str = str(NC)
         bucket = all_knots["non-trivial-knots"].setdefault(nc_str, {})
+        
+        # Generate unique file key based on current count
+        existing_count = len(bucket)
+        file_key = f"{NC}_{existing_count}"
+        
         if file_key not in bucket:
             bucket[file_key] = str([list(row) for row in cpd]).replace(' ', '')
             count += 1
@@ -150,22 +165,26 @@ def main():
     for nc in range(LOWER_NC, UPPER_NC + 1):
         all_knots["non-trivial-knots"].setdefault(str(nc), {})
 
-    tasks = []
+    # Calculate targets and existing counts per NC
+    targets_per_nc = {}
     for NC in range(LOWER_NC, UPPER_NC + 1):
         have = hard_unknots.get(NC, 0)
         target = min((have + 1) if have > 0 else 0, CONTRIBUTION_LIMIT)
-        for sample_id in range(target):
-            alternating = random.choice([True, False])
-            tasks.append((NC, sample_id, alternating))
-
-    if not tasks:
-        return
+        existing = len(all_knots["non-trivial-knots"].get(str(NC), {}))
+        targets_per_nc[NC] = {
+            "target": target,
+            "existing": existing,
+            "needed": max(0, target - existing),
+            "stored": 0,
+            "attempts": 0
+        }
 
     ctx = get_context("fork")
     manager = ctx.Manager()
     seen = manager.dict()
     lock = manager.Lock()
 
+    # Pre-populate seen dict with existing knots
     for nc_dict in all_knots["non-trivial-knots"].values():
         for pd_code_str in nc_dict.values():
             try:
@@ -176,9 +195,19 @@ def main():
             except Exception:
                 continue
 
+    # Track statistics
+    stats = {
+        "duplicates": 0,
+        "unknots": 0,
+        "rejected_crossings": 0,
+        "stored": 0,
+        "errors": 0,
+        "total_attempts": 0
+    }
+
+    total_needed = sum(info["needed"] for info in targets_per_nc.values())
+    
     new_knot_entries = []
-    done = 0
-    total = len(tasks)
 
     with ctx.Pool(
         processes=PROCESSES,
@@ -186,26 +215,75 @@ def main():
         initializer=_init_pool,
         initargs=(seen, lock),
     ) as pool:
-        for status, NC, file_key, cpd, msg in pool.imap_unordered(_worker, tasks, chunksize=CHUNKSIZE):
-            done += 1
+        
+        # Process each NC value until we have enough valid knots
+        for NC in range(LOWER_NC, UPPER_NC + 1):
+            info = targets_per_nc[NC]
+            
+            if info["needed"] <= 0:
+                print(f"NC={NC}: Already have {info['existing']} knots (target: {info['target']}), skipping.")
+                continue
+            
+            print(f"\nNC={NC}: Need {info['needed']} more knots (have {info['existing']}, target {info['target']})")
+            
+            # Keep generating tasks until we have enough stored knots
+            batch_size = max(info["needed"] * 10, 100)  # Generate 10x attempts per needed knot
+            
+            while info["stored"] < info["needed"] and info["attempts"] < MAX_ATTEMPTS_PER_NC:
+                # Generate a batch of tasks
+                tasks = []
+                for i in range(batch_size):
+                    alternating = random.choice([True, False])
+                    tasks.append((NC, info["attempts"] + i, alternating))
+                
+                # Process batch
+                for status, nc, cpd, msg in pool.imap_unordered(_worker, tasks, chunksize=CHUNKSIZE):
+                    info["attempts"] += 1
+                    stats["total_attempts"] += 1
 
-            if status == 0:
-                if done % 250 == 0 or done == total:
-                    print(f"[{done}/{total}] SKIP dup  NC={NC} id={file_key}: {msg}")
-            elif status == 1:
-                if done % 250 == 0 or done == total:
-                    print(f"[{done}/{total}] SKIP unk  NC={NC} id={file_key}: {msg}")
-            elif status == 2:
-                new_knot_entries.append((NC, file_key, cpd))
-                if (done % 100 == 0) or (done == total):
-                    print(f"[{done}/{total}] STORED PD  NC={NC} id={file_key}: {msg} - Pending entries: {len(new_knot_entries)}")
-                if len(new_knot_entries) >= FLUSH_EVERY:
-                    _flush_to_json(new_knot_entries, all_knots)
-                    new_knot_entries.clear()
-                    gc.collect()
-            elif status == 3:
-                print(f"[{done}/{total}] FAIL (NC={NC} id={file_key}): {msg}")
+                    if status == 0:
+                        if "duplicate" in msg:
+                            stats["duplicates"] += 1
+                        elif "REJECTED" in msg:
+                            stats["rejected_crossings"] += 1
+                            if info["attempts"] % 500 == 0:
+                                print(f"  NC={NC} [{info['stored']}/{info['needed']}] attempts={info['attempts']}: {msg}")
+                    elif status == 1:
+                        stats["unknots"] += 1
+                    elif status == 2:
+                        stats["stored"] += 1
+                        info["stored"] += 1
+                        new_knot_entries.append((NC, cpd))
+                        print(f"  NC={NC} [{info['stored']}/{info['needed']}] STORED: {msg}")
+                        
+                        if len(new_knot_entries) >= FLUSH_EVERY:
+                            _flush_to_json(new_knot_entries, all_knots)
+                            new_knot_entries.clear()
+                            gc.collect()
+                        
+                        # Check if we've reached the target for this NC
+                        if info["stored"] >= info["needed"]:
+                            print(f"  NC={NC}: Target reached! ({info['stored']}/{info['needed']})")
+                            # Break out of the loop to stop processing remaining tasks
+                            break
+                    elif status == 3:
+                        stats["errors"] += 1
+                        if info["attempts"] % 100 == 0:
+                            print(f"  NC={NC} ERROR: {msg}")
+                
+                # Check if we've reached the target
+                if info["stored"] >= info["needed"]:
+                    break
+                
+                # Check if we've exceeded max attempts
+                if info["attempts"] >= MAX_ATTEMPTS_PER_NC:
+                    print(f"  NC={NC}: Max attempts reached ({MAX_ATTEMPTS_PER_NC}), stopping.")
+                    print(f"  NC={NC}: Stored {info['stored']}/{info['needed']} knots")
+                    break
+            
+            print(f"NC={NC}: Completed with {info['stored']}/{info['needed']} knots after {info['attempts']} attempts")
 
+    # Flush any remaining entries
     if new_knot_entries:
         _flush_to_json(new_knot_entries, all_knots)
         new_knot_entries.clear()
