@@ -48,8 +48,10 @@ def _render_and_augment(knot_id: str, pd_code, output_dir: str):
             img_resized = img.resize((224, 224), LANCZOS)
 
             original_width, original_height = img_resized.size
+
             ZOOM_BOUNDS = (1.4, 2.0)
             ROTATE_BOUNDS = (30, 330)
+            
             zoom_coefficient = random.uniform(*ZOOM_BOUNDS)
             rotate_angle = random.uniform(*ROTATE_BOUNDS)
 
@@ -78,7 +80,7 @@ def _render_and_augment(knot_id: str, pd_code, output_dir: str):
 
             out_path = os.path.join(
                 output_dir,
-                f"{knot_id}_zoom{zoom_coefficient:.1f}_rot{rotate_angle:.1f}.png"
+                f"{'K' if output_dir.endswith('/knot/') else 'U'}_{knot_id}_zoom{zoom_coefficient:.1f}_rot{rotate_angle:.1f}.png"
             )
             canvas.save(out_path, format='PNG', optimize=False, compress_level=1)
 
@@ -102,8 +104,13 @@ def _read_jobs(source_json: str, output_dir: str):
     # crossing_num = [20, 40]
     for category, crossings_dict in data.items():
         for crossing_num, knots_dict in crossings_dict.items():
+            CONTRIBUTION_LIMIT = 17_500
+            contribution = 0
             for knot_id, pd_code_str in knots_dict.items():
+                if contribution == CONTRIBUTION_LIMIT:
+                    break
                 pd_code = ast.literal_eval(pd_code_str)
+                contribution += 1
                 yield (knot_id, pd_code, output_dir)
 
 def _run_one(job):
@@ -139,9 +146,9 @@ def main():
     except RuntimeError:
         pass
 
-    src: str = "SeeingTheUnknot_non_trivial_knots.json"
-    out: str = "/home/jake/Personal/SeeingTheUnknot/knot_data/diagram/knot/"
-    process_pd_codes(src, out, n_workers=os.cpu_count - 4)
+    src: str = "SeeingTheUnknot_unknots.json"
+    out: str = "/home/jake/Personal/SeeingTheUnknot/knot_data/diagram/unknot/"
+    process_pd_codes(src, out, n_workers=os.cpu_count() - 3)
 
 
 if __name__ == "__main__":
