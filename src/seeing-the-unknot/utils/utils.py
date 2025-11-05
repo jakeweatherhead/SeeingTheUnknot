@@ -19,6 +19,7 @@ import json
 import torch
 import random
 from pathlib import Path
+from config import config
 from datetime import datetime
 import constants.constant as C
 from schema.result import TrainResult, EvalResult
@@ -42,26 +43,6 @@ def set_random_seeds() -> None:
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(C.GLOBAL_SEED) 
 
-def get_results_dir(
-    run_type: str
-) -> Path:
-    """
-    E.g. 'sweep_6_JUL_2008_21:15' OR 'trial_8_JUN_2025_18:30'
-    
-    Args: 
-        run_type: 'sweep' OR 'trial'
-
-    Returns:
-        path: path to results directory.
-    """
-    return Path(
-        f"{run_type}_" 
-        + datetime
-            .now()
-            .strftime(C.DATETIME_FMT)
-            .upper()
-    )
-
 def safe_divide(n: int, d: int) -> float:
     """
     Safely calculate n / d.
@@ -82,67 +63,65 @@ def log_results(
 ) -> None:
     if train_results and len(train_results) == 1:
         log_epoch_results(
-            results_json, 
-            train_results, 
-            eval_results, 
-            res_id=0
+            results_json=results_json, 
+            train_results=train_results, 
+            eval_results=eval_results, 
+            epoch_id=0
         )
     
-    elif not train_results: # test results
+    elif not train_results: # => test results
         log_epoch_results(
-            results_json, 
-            None, 
-            eval_results, 
-            res_id=0
+            results_json=results_json, 
+            train_results=None, 
+            eval_results=eval_results, 
+            epoch_id=C.NUM_EPOCHS+1
         )
 
     else:
         for e_id in range(1, C.NUM_EPOCHS):
             log_epoch_results(
-                results_json, 
-                train_results, 
-                eval_results, 
-                res_id=e_id
+                results_json=results_json, 
+                train_results=train_results, 
+                eval_results=eval_results, 
+                epoch_id=e_id
             )
 
+from pathlib import Path
+import json
 
 def log_epoch_results(
     results_json: Path,
-    train_results: list[TrainResult] | None, 
-    eval_results: list[EvalResult],
-    res_id: int,
+    train_results: list | None, 
+    eval_results: list,
+    epoch_id: int,
 ) -> None:
-    # Get current file state
     with open(results_json, 'r') as f_in:
         data = json.load(f_in)
 
-    # Construct file update
-    root = data[results_json.stem][f'epoch_{res_id}']
+    root: dict  = data['results']
+    label: str  = f'epoch_{epoch_id}' if train_results else 'test'
+    epoch: dict = root.setdefault(label, {})
 
     if train_results:
-        root['train']['duration']      = train_results[res_id].duration
-        root['train']['mean_accuracy'] = train_results[res_id].mean_accuracy
-        root['train']['mean_loss']     = train_results[res_id].mean_loss
+        train             = epoch.setdefault('train', {})
+        train['duration'] = train_results[0].duration
+        train['accuracy'] = train_results[0].accuracy
+        train['loss']     = train_results[0].loss
 
-    label: str = 'val' if train_results else 'test'
+    eval_type = 'val' if train_results else 'test'
+    eval                = epoch.setdefault(eval_type, {})
+    eval['duration']    = eval_results[0].duration
+    eval['accuracy']    = eval_results[0].accuracy
+    eval['loss']        = eval_results[0].loss
+    eval['n_correct']   = eval_results[0].n_correct
+    eval['tp']          = eval_results[0].tp
+    eval['fn']          = eval_results[0].fn
+    eval['tn']          = eval_results[0].tn
+    eval['fp']          = eval_results[0].fp
+    eval['precision']   = eval_results[0].precision
+    eval['recall']      = eval_results[0].recall
+    eval['f1_score']    = eval_results[0].f1_score
+    eval['specificity'] = eval_results[0].specificity
 
-    root[label]['duration']    = eval_results[res_id].duration
-    root[label]['accuracy']    = eval_results[res_id].accuracy
-    root[label]['loss']        = eval_results[res_id].loss
-    root[label]['n_correct']   = eval_results[res_id].n_correct
-    root[label]['tp']          = eval_results[res_id].tp
-    root[label]['fn']          = eval_results[res_id].fn
-    root[label]['tn']          = eval_results[res_id].tn
-    root[label]['fp']          = eval_results[res_id].fp
-    root[label]['precision']   = eval_results[res_id].precision
-    root[label]['recall']      = eval_results[res_id].recall
-    root[label]['f1_score']    = eval_results[res_id].f1_score
-    root[label]['specificity'] = eval_results[res_id].specificity
-
-    # Write file update
     with open(results_json, 'w') as f_out:
-        json.dump(
-            data,
-            f_out,
-            indent=4
-        )
+        json.dump(data, f_out, indent=4)
