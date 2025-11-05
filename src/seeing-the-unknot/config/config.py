@@ -67,6 +67,7 @@ class CNNConfig(Config):
     architecture:          str = "cnn"
     model_name:            str = "timm/convnext_base.fb_in22k_ft_in1k"
 
+    @staticmethod
     def get_run_path() -> Path:
         return Config.get_git_root() / "runs" / "cnn"
 
@@ -88,6 +89,7 @@ class ViTConfig(Config):
     architecture:          str = "vit"
     model_name:            str = "timm/vit_base_patch16_224.augreg_in21k_ft_in1k"
 
+    @staticmethod
     def get_run_path() -> Path:
         return Config.get_git_root() / "runs" / "vit"
 
