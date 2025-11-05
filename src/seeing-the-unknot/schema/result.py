@@ -21,9 +21,9 @@ from dataclasses import dataclass
 @dataclass
 class TrainResult:
     """Stores training result for a single epoch"""
-    duration:      float
-    mean_accuracy: float
-    mean_loss:     float
+    duration: float
+    accuracy: float
+    loss:     float
 
 @dataclass
 class EvalResult:
