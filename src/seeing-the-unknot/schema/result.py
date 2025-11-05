@@ -27,7 +27,7 @@ class TrainResult:
 
 @dataclass
 class EvalResult:
-    """Stores validation (for a single epoch) OR test results.
+    """Stores validation results for a single epoch OR test results.
     
     Confusion matrix bins:
         True Positives  (tp): Unknots classified as unknots.
