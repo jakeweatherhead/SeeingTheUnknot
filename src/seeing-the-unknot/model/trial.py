@@ -43,13 +43,15 @@ class Trial:
         self.run_type: str                    = "trial"
         self.architecture: str                = os.environ['ARCHITECTURE']
         self.config: config.Config            = config.OPTIONS[self.architecture]
-        self.trial_dir: Path                  = self._get_trial_dir()
+        self.trial_id: str                    = self._get_trial_id()
+        self.trial_dir: Path                  = self._create_trial_dir()
         self.device: device                   = self._get_device()
         self.criterion: Module                = self._get_criterion()
         self.splits: dict                     = self._get_splits()
-        self.model: Module                    = model_utils.build_model(config, self.device)
+        self.model: Module                    = model_utils.build_model(self.config, self.device)
         self.datasets: Dict[str, KnotDataset] = data_utils.create_datasets(self.splits)
-        self.dataloaders: dict                = data_utils.create_dataloaders(self.config, self.datasets)      
+        self.dataloaders: dict                = data_utils.create_dataloaders(self.config, self.datasets)
+        self._create_results_json()
 
     def run(self) -> float:
         """
@@ -71,7 +73,8 @@ class Trial:
                 model=self.model,
                 dataloader=self.dataloaders['train'],
                 device=self.device,
-                criterion=self.criterion
+                criterion=self.criterion,
+                epoch_zero=True
             )
 
             val_result: EvalResult = evaluate(
@@ -95,7 +98,7 @@ class Trial:
                 scheduler=scheduler, 
                 config=config,
                 criterion=self.criterion,
-                results_dir=self.trial_dir
+                trial_dir=self.trial_dir
             )
 
             utils.log_results(
@@ -104,31 +107,19 @@ class Trial:
                 eval_results=val_results
             )
 
-            if self.run_type == 'trial':
-                data_utils.save_curve_plots(
-                    config=config, 
-                    trial_results=self.trial_results, 
-                    results_dir=self.trial_dir
-                )
-
             self._run_tests()
 
         except Exception as e:
             raise Exception(f"Error in Trial: {e}") 
 
-    def _get_trial_dir(self) -> Path:
+    def _create_trial_dir(self) -> Path:
         """
         Creates a directory to store the current Trial's results.
         
         Returns:
             Path: the directory to store results in for the current Trial.
         """
-        trial_dir: Path = Path(
-            self.config.get_run_path(),
-            utils.get_results_dir(
-                run_type=self.run_type
-            )
-        )
+        trial_dir: Path = self.config.get_run_path() / self.trial_id
         os.makedirs(trial_dir, exist_ok=True)
 
         return trial_dir
@@ -230,7 +221,7 @@ class Trial:
             "cosine": {
                 "class": optim.lr_scheduler.CosineAnnealingLR,
                 "params": {
-                    "T_max": config.num_epochs,
+                    "T_max": C.NUM_EPOCHS,
                     "eta_min": config.cosine_eta_min
                 }
             },
@@ -259,10 +250,10 @@ class Trial:
             "ckpt_paths": ckpt_paths
         }
 
-        cam_utils.generate_saliency_maps(
-            self.config, 
-            **grad_cam_params
-        )
+        # cam_utils.generate_saliency_maps( # NOTE: smaps will be created locally after run completion
+        #     self.config, 
+        #     **grad_cam_params
+        # )
 
         for ckpt_path in ckpt_paths:
             model: Module = model_utils.load_model(self.model, ckpt_path)
@@ -295,29 +286,30 @@ class Trial:
         )
     
     def _get_trial_id(self) -> str:
-        """Creates unique trial identifier in trial_DD/MMM/YYYY-HH:MM:SS format."""
-        dt = datetime.now(timezone.utc).strftime("%d/%b/%Y-%H:%M:%S").upper()
+        """
+        Creates a unique trial identifier in the form of: trial_DD_MMM_YYYY-HH:MM:SS.
+        """
+        dt = datetime.now().strftime(C.DATETIME_FMT).upper()
         return f"trial_{dt}"
-    
-    def _create_results_assets(self) -> None:
-        # Make results directory for this Trial
-        os.mkdir(
-            (results_dir := self.config.get_git_root() / self.trial_id), 
-            exist_ok=True
-        )
 
-        # Create JSON results file
-        self.json_f: str = f"{results_dir}/{self.trial_id}_results.json"
+    def _create_results_json(self) -> None:
+        self.json_f: str = self.trial_dir / f"{self.trial_id}_results.json"
 
-        with open(f"{results_dir}/{self.trial_id}_results.json", 'w') as f:
-            data = json.load(f)
-
-        data: dict = {f"{self.trial_dir}_results": {}}
+        data: dict = {f"results": {}}
 
         with open(self.json_f, 'w') as f_out:
             json.dump(data, f_out, indent=4)
 
-        # Create saliency map directories
+    def _mk_results_dir(self) -> None:
+        results_dir = self.config.get_run_path() / self.trial_id
+        os.mkdir(results_dir)
+
+        return results_dir
+
+    def _create_smaps_dir(
+        self,
+        results_dir
+    ) -> None:
         os.mkdir(smap_dir := results_dir / 'smaps', exist_ok=True)
         os.mkdir(smap_dir / 'TP', exist_ok=True)
         os.mkdir(smap_dir / 'FN', exist_ok=True)

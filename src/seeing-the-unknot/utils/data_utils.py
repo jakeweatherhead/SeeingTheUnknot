@@ -41,16 +41,14 @@ def get_transformation() -> transforms.Compose:
 def _get_diagram_paths(
     split: str
 ) -> list[str]:
-    m_path = f"../../knot_data/{split}/*.png"
+    m_path = f"../../knot_data/diagram/{split}/*.png"
     return glob.glob(m_path)
 
 def _get_diagram_labels(
     paths: list[str]
 ) -> list[int]:
     return [
-        C.KNOT_LABEL
-        if Path(path).stem[0] == 'K' 
-        else C.UNKNOT_LABEL
+        C.KNOT_LABEL if Path(path).stem[0] == 'K' else C.UNKNOT_LABEL
         for path in paths
     ]
 
@@ -59,7 +57,7 @@ def get_labelled_diagram_paths(
 ) -> tuple[list[str], list[int]]:
     paths  = _get_diagram_paths(split)
     labels = _get_diagram_labels(paths)
-    paths, labels = _shuffle_pair(paths, labels)
+    paths, labels = _zip_shuffle(paths, labels)
     return paths, labels
 
 def create_datasets(
@@ -142,7 +140,7 @@ def _plot_curve(
                 dpi=C.DPI)
     plt.clf()
 
-def _shuffle_pair(
+def _zip_shuffle(
     lst1: list[str], 
     lst2: list[int]
 ) -> tuple[list[str], list[int]]:

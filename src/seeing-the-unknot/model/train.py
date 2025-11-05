@@ -55,7 +55,7 @@ def train(
 
     model.train()
 
-    for epoch_idx in range(config.num_epochs):
+    for epoch_idx in range(C.NUM_EPOCHS):
         ts                = time.time()
         total_loss: float = 0.0
         n_correct: int    = 0
@@ -86,8 +86,8 @@ def train(
         train_results.append(
             TrainResult(
                 duration=time.time() - ts,
-                mean_accuracy=acc,
-                mean_loss=loss
+                accuracy=acc,
+                loss=loss
             )        
         )
 
@@ -113,7 +113,7 @@ def train(
             patience -= 1
 
         if patience == 0:
-            print(f"Patience exceeded; Stopping! (patience={C.PATIENCE} epochs)")
+            break  # C.PATIENCE exceeded
 
         scheduler.step()
 
