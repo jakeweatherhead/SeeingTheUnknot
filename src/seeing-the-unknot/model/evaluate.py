@@ -21,7 +21,7 @@ from torch.nn import Module
 from torch.utils.data import DataLoader
 
 import time
-from schema.result import EvalResult
+from schema.result import TrainResult, EvalResult
 import constants.constant as C
 from utils import utils
 
@@ -31,6 +31,7 @@ def evaluate(
     dataloader: DataLoader,
     device: device,
     criterion: Module,
+    epoch_zero: bool = False
 ) -> EvalResult:
     """
     Evaluate knot classifier on 'validation' OR 'test' split.
@@ -91,6 +92,13 @@ def evaluate(
     recall      = utils.safe_divide(tp, tp + fn)
     specificity = utils.safe_divide(tn, tn + fp)
     f1_score    = utils.safe_divide(2 * tp, 2 * tp + fp + fn)
+
+    if epoch_zero:
+        return TrainResult(
+            duration=time.time() - ts,
+            accuracy=accuracy,
+            loss=loss
+        )
 
     return EvalResult(
         duration=time.time() - ts,
