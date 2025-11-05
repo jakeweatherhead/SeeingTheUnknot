@@ -21,9 +21,9 @@ from dataclasses import dataclass
 @dataclass
 class TrainResult:
     """Stores training result for a single epoch"""
-    duration: float
+    duration:      float
     mean_accuracy: float
-    mean_loss: float
+    mean_loss:     float
 
 @dataclass
 class EvalResult:
@@ -35,15 +35,15 @@ class EvalResult:
         True Negatives  (tn): Non-trivial knots classified as non-trivial knots.
         False Positives (fp): Non-trivial knots classified as unknots.
     """
-    duration: float
-    accuracy: float
-    loss: float
-    n_correct: int 
-    tp: int             
-    fn: int             
-    tn: int             
-    fp: int            
-    precision: float
-    recall: float
-    f1_score: float
+    duration:    float
+    accuracy:    float
+    loss:        float
+    n_correct:     int 
+    tp:            int             
+    fn:            int             
+    tn:            int             
+    fp:            int            
+    precision:   float
+    recall:      float
+    f1_score:    float
     specificity: float
