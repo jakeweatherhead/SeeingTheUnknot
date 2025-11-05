@@ -1,7 +1,21 @@
+
+from spherogram import random_link
 from sage.knots.link import Link
 
-pd = [[54,77,55,78],[16,54,17,53],[66,17,67,18],[78,68,79,67],[68,80,69,79],[80,55,77,56],[56,16,57,15],[14,58,15,57],[64,14,65,13],[52,65,53,66],[12,51,13,52],[50,11,51,12],[18,49,19,50],[48,19,49,20],[20,5,21,6],[4,25,5,26],[26,36,27,35],[36,69,37,70],[28,37,29,38],[2,29,3,30],[76,3,39,4],[8,39,9,40],[58,10,59,9],[10,64,11,63],[62,59,63,60],[60,42,61,41],[42,7,43,8],[6,47,7,48],[46,22,47,21],[24,46,25,45],[44,24,45,23],[22,44,23,43],[40,62,41,61],[72,76,73,75],[34,73,35,74],[74,33,75,34],[32,72,33,71],[70,28,71,27],[38,31,1,32],[30,1,31,2]]
+
+L = random_link(
+        crossings=5000,
+        num_components=1,  # Prevent n-component links (n >= 2)
+        alternating=True,
+        consistent_twist_regions=True,
+        max_tries=1_000
+    )
+
+pd = L.PD_code()
+
+if any(0 in row for row in pd):  # for SageMath compatibility
+            pd = [[e + 1 for e in row] for row in pd]
 
 L = Link(pd)
 p = L.plot(gap=0.25, thickness=1.5, color='black')
-p.save(f'test_diagram.png', dpi=300)
+p.save(f'5000.png', dpi=300)
