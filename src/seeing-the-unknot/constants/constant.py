@@ -27,7 +27,7 @@ PATIENCE: int = 5
 SPLITS: list[str] = ['train', 'val', 'test']
 SECONDS_IN_HOUR: int = 3_600
 SECONDS_IN_MINUTE: int = 60
-DATETIME_FMT: str = '%d_%b_%Y_%H:%M'
+DATETIME_FMT: str = '%d_%b_%Y_%H:%M:%S'
 LOSS_PLOT_FILENAME: str = 'loss_plot.png'
 ACC_PLOT_FILENAME: str = 'acc_plot.png'
 
