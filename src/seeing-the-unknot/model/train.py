@@ -111,8 +111,8 @@ def train(
         else:
             patience -= 1
 
-        if patience == 0:
-            break  # C.PATIENCE exceeded
+        # if patience == 0:
+        #     break  # C.PATIENCE exceeded
 
         scheduler.step()
 
