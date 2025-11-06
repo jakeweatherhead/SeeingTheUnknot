@@ -15,7 +15,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import pyhopper
+# import pyhopper
 
 DPI: int = 300
 NUM_EPOCHS: int = 30
@@ -38,20 +38,20 @@ IMAGENET_CHANNEL_STDS: list[float] = [0.229, 0.224, 0.225]
 SWEEP_N_JOBS: int = 1
 SWEEP_DURATION: str = '24h'
 SWEEP_DIRECTION: str = 'minimize'
-SWEEP_SEARCH_SPACE: dict = {
-    'learning_rate': pyhopper.float(1e-5, 1e-1, '0.1g'),
-    'batch_size': pyhopper.choice([8, 16, 32]),
-    'num_epochs': pyhopper.int(50, 75),
-    'weight_decay': pyhopper.float(1e-6, 1e-2, '0.1g'),
-    'eps': pyhopper.float(1e-9, 1e-6, '0.1g'),
-    'beta_1': pyhopper.float(0.85, 0.95, '0.3f'),
-    'beta_2': pyhopper.float(0.95, 0.999, '0.3f'),
-    'scheduler': pyhopper.choice(['step', 'cosine', 'exponential']),
-    'step_size': pyhopper.int(10, 50),
-    'gamma': pyhopper.float(0.1, 0.8, '0.2f'),
-    'cosine_eta_min': pyhopper.float(1e-7, 1e-4, '0.1g'),
-    'label_smoothing': pyhopper.float(0.0, 0.2, '0.2f'),
-}
+# SWEEP_SEARCH_SPACE: dict = {
+#     'learning_rate': pyhopper.float(1e-5, 1e-1, '0.1g'),
+#     'batch_size': pyhopper.choice([8, 16, 32]),
+#     'num_epochs': pyhopper.int(50, 75),
+#     'weight_decay': pyhopper.float(1e-6, 1e-2, '0.1g'),
+#     'eps': pyhopper.float(1e-9, 1e-6, '0.1g'),
+#     'beta_1': pyhopper.float(0.85, 0.95, '0.3f'),
+#     'beta_2': pyhopper.float(0.95, 0.999, '0.3f'),
+#     'scheduler': pyhopper.choice(['step', 'cosine', 'exponential']),
+#     'step_size': pyhopper.int(10, 50),
+#     'gamma': pyhopper.float(0.1, 0.8, '0.2f'),
+#     'cosine_eta_min': pyhopper.float(1e-7, 1e-4, '0.1g'),
+#     'label_smoothing': pyhopper.float(0.0, 0.2, '0.2f'),
+# }
 
 LOSS_PLOT_CONFIG: dict = {
     'train_label': 'Train Loss',
