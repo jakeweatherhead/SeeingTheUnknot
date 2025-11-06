@@ -8,6 +8,7 @@ import tempfile
 import multiprocessing as mp
 from PIL import Image
 from sage.knots.link import Link
+from spherogram import random_link
 
 try:
     LANCZOS = Image.Resampling.LANCZOS
@@ -151,5 +152,24 @@ def main():
     process_pd_codes(src, out, n_workers=os.cpu_count() - 3)
 
 
+def single_plot():
+    L = random_link(
+            crossings=5000,
+            num_components=1,  # Prevent n-component links (n >= 2)
+            alternating=True,
+            consistent_twist_regions=True,
+            max_tries=1_000
+        )
+
+    pd = L.PD_code()
+
+    if any(0 in row for row in pd):  # for SageMath compatibility
+                pd = [[e + 1 for e in row] for row in pd]
+
+    L = Link(pd)
+    p = L.plot(gap=0.25, thickness=1.5, color='black')
+    p.save(f'5000.png', dpi=300)
+
 if __name__ == "__main__":
+    single_plot()
     main()
