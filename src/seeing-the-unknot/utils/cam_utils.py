@@ -22,7 +22,7 @@ import cv2
 from abc import ABC, abstractmethod
 from functools import singledispatch
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Type
 
 import numpy as np
 import timm
@@ -271,34 +271,25 @@ class ViTCam(Cam):
 
 
 @singledispatch
+def cam_for(_: config.Config) -> Type[Cam]: ...
+
+@cam_for.register
+def _(cfg: CNNConfig) -> Type[Cam]: return CNNCam
+
+@cam_for.register
+def _(cfg: ViTConfig) -> Type[Cam]: return ViTCam
+
 def plot_smaps(
-    config: config.Config, 
+    cfg: config.Config, 
     **params
 ) -> None:
     """
     Plot saliency maps for the appropriate architecture branching on config type.
-    
+
     Args:
-        config: Configuration object (CNNConfig or ViTConfig)
-        params: Additional arguments passed to the cam
+        cfg: Configuration object (CNNConfig or ViTConfig).
+        params: Additional grad-cam related parameters.
     """
-    ...
-
-@plot_smaps.register
-def _(
-    config: CNNConfig, 
-    **params
-) -> None:
-    """Plot saliency maps for the CNN."""
-    cam = CNNCam(model_name=config.model_name)
-    cam.run(**params)
-
-
-@plot_smaps.register
-def _(
-    config: ViTConfig,
-    **params
-) -> None:
-    """Plot saliency maps for the ViT."""
-    cam = ViTCam(model_name=config.model_name)
+    cam_cls = cam_for(cfg)
+    cam = cam_cls()
     cam.run(**params)
