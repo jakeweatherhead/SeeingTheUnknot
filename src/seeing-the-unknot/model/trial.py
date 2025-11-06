@@ -84,6 +84,9 @@ class Trial:
                 criterion=self.criterion
             )
 
+            with open(f'{self.trial_dir}/log.txt', "a") as f:
+                f.write(f"Epoch 0: Train Acc: {train_result.accuracy}, Val Acc: {val_result.accuracy}.\n")
+
             utils.log_results( # Log epoch zero results
                 results_json=self.json_f, 
                 train_results=[train_result], 
@@ -96,7 +99,6 @@ class Trial:
                 dataloaders=self.dataloaders, 
                 optimizer=optimizer, 
                 scheduler=scheduler, 
-                config=config,
                 criterion=self.criterion,
                 trial_dir=self.trial_dir
             )
