@@ -113,32 +113,32 @@ def get_dataset_summary(
     
     return summary
 
-# def _plot_curve(
-#     model: str,
-#     train_data: list[float], 
-#     val_data: list[float],
-#     config: dict,
-#     results_dir: Path
-# ) -> None:
-#     epochs: range = range(0, len(train_data))
-#     plt.plot(epochs, 
-#              train_data, 
-#              label=config['train_label'], 
-#              color='blue', 
-#              linestyle='--') 
+def _plot_curve(
+    model: str,
+    train_data: list[float], 
+    val_data: list[float],
+    config: dict,
+    results_dir: Path
+) -> None:
+    epochs: range = range(0, len(train_data))
+    plt.plot(epochs, 
+             train_data, 
+             label=config['train_label'], 
+             color='blue', 
+             linestyle='--') 
     
-#     plt.plot(epochs, 
-#              val_data, 
-#              label=config['val_label'], 
-#              color='green')
+    plt.plot(epochs, 
+             val_data, 
+             label=config['val_label'], 
+             color='green')
     
-#     plt.xlabel(config['x_label'])
-#     plt.ylabel(config['y_label'])
-#     plt.title(config['title'](model.upper()))
-#     plt.legend()
-#     plt.savefig(results_dir / config['filename'],
-#                 dpi=C.DPI)
-#     plt.clf()
+    plt.xlabel(config['x_label'])
+    plt.ylabel(config['y_label'])
+    plt.title(config['title'](model.upper()))
+    plt.legend()
+    plt.savefig(results_dir / config['filename'],
+                dpi=C.DPI)
+    plt.clf()
 
 def _zip_shuffle(
     lst1: list[str], 
