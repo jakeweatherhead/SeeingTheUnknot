@@ -21,7 +21,7 @@ load_dotenv()
 from model.trial import Trial
 
 
-def main():
+def main(_):
     Trial().run()
 
 if __name__ == "__main__":
