@@ -156,7 +156,7 @@ class Cam(ABC):
         except Exception as e:
             raise Exception(f"Error processing {image_path}: {str(e)}")
     
-    def run_cam(
+    def run(
         self, 
         dataset: KnotDataset, 
         ckpt_paths: List[Path]
@@ -291,7 +291,7 @@ def _(
 ) -> None:
     """Plot saliency maps for the CNN."""
     cam = CNNCam(model_name=config.model_name)
-    cam.run_cam(**cam_params)
+    cam.run(**cam_params)
 
 
 @plot_smaps.register
@@ -301,4 +301,4 @@ def _(
 ) -> None:
     """Plot saliency maps for the ViT."""
     cam = ViTCam(model_name=config.model_name)
-    cam.run_cam(**cam_params)
+    cam.run(**cam_params)
