@@ -94,7 +94,7 @@ class Cam(ABC):
         return predicted_class, confidence, class_name
     
     @abstractmethod
-    def compute_saliency_map(
+    def compute_smaps(
         self, 
         input_tensor: torch.Tensor, 
         predicted_class: int
@@ -134,7 +134,7 @@ class Cam(ABC):
         )
         cv2.imwrite(output_path, cam_image)
     
-    def process_single_image(
+    def process_image(
         self, 
         image_path: str, 
         true_label: int, 
@@ -144,7 +144,7 @@ class Cam(ABC):
         try:
             rgb_img, input_tensor = self.preprocess_image(image_path)
             predicted_class, confidence, predicted_label = self.predict_with_model(input_tensor)
-            grayscale_cam = self.compute_saliency_map(input_tensor, predicted_class)
+            grayscale_cam = self.compute_smaps(input_tensor, predicted_class)
             
             cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
             cam_image = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
@@ -173,7 +173,7 @@ class Cam(ABC):
             output_dir = ckpt_path.parent / "saliency_maps"
             
             for image_id in range(len(dataset)):
-                self.process_single_image(
+                self.process_image(
                     image_path=dataset.image_paths[image_id], 
                     true_label=dataset.labels[image_id], 
                     output_dir=str(output_dir)
@@ -189,7 +189,7 @@ class CNNCam(Cam):
     ):
         super().__init__(model_name)
     
-    def compute_saliency_map(
+    def compute_smaps(
         self, 
         input_tensor: torch.Tensor, 
         predicted_class: int
@@ -213,7 +213,7 @@ class ViTCam(Cam):
     ):
         super().__init__(model_name)
     
-    def compute_saliency_map(
+    def compute_smaps(
         self, 
         input_tensor: torch.Tensor, 
         predicted_class: int
