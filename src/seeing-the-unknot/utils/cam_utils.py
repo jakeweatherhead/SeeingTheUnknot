@@ -221,7 +221,7 @@ class ViTCam(Cam):
         """Compute attention rollout."""
         attention_weights = []
         
-        def attention_hook(module, input, output):
+        def attn_hook(module, input, output):
             B, N, C = input[0].shape
             qkv = module.qkv(input[0]).reshape(
                 B, N, 3, module.num_heads, C // module.num_heads
@@ -235,7 +235,7 @@ class ViTCam(Cam):
         
         hooks = []
         for block in self._model.blocks:
-            hook = block.attn.register_forward_hook(attention_hook)
+            hook = block.attn.register_forward_hook(attn_hook)
             hooks.append(hook)
         
         with torch.no_grad():
