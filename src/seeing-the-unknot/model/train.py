@@ -41,7 +41,6 @@ def train(
     device: device,
     optimizer: Optimizer,
     scheduler: _LRScheduler,
-    config: config.Config,    
     criterion: Module,
     trial_dir: Path
 ) -> tuple[list[TrainResult], list[EvalResult]]:
@@ -55,7 +54,7 @@ def train(
 
     model.train()
 
-    for epoch_idx in range(C.NUM_EPOCHS):
+    for epoch_idx in range(1, C.NUM_EPOCHS + 1):
         ts                = time.time()
         total_loss: float = 0.0
         n_correct: int    = 0
@@ -104,7 +103,7 @@ def train(
             best_val_accuracy = val_result.accuracy
             patience = C.PATIENCE
 
-            weights_path = model_utils.save_model(
+            model_utils.save_model(
                 model=model,
                 trial_dir=trial_dir,
                 metrics={'val_acc': best_val_accuracy},
@@ -117,6 +116,8 @@ def train(
 
         scheduler.step()
 
-        print(f"Training epoch {epoch_idx} complete...")
+        with open(f'{trial_dir}/log.txt', "a") as f:
+            f.write(f"Epoch {epoch_idx}: Train Acc: {acc}, Val Acc: {val_result.accuracy}.\n")
+
 
     return train_results, val_results
