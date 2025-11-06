@@ -284,11 +284,11 @@ def plot_smaps(
     **params
 ) -> None:
     """
-    Plot saliency maps for the appropriate architecture branching on config type.
+    Plot saliency maps for the given architecture.
 
     Args:
-        cfg: Configuration object (CNN_Config or ViT_Config).
-        params: Additional grad-cam related parameters.
+        cfg:    Configuration object (CNN_Config or ViT_Config).
+        params: Additional grad-cam parameters.
     """
     cam_cls = cam_for(cfg)
     cam = cam_cls()
