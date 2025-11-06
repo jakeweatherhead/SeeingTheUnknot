@@ -273,32 +273,32 @@ class ViTCam(Cam):
 @singledispatch
 def plot_smaps(
     config: config.Config, 
-    **cam_params
+    **params
 ) -> None:
     """
     Plot saliency maps for the appropriate architecture branching on config type.
     
     Args:
-        config    : Configuration object (CNNConfig or ViTConfig)
-        cam_params: Additional arguments passed to the cam
+        config: Configuration object (CNNConfig or ViTConfig)
+        params: Additional arguments passed to the cam
     """
     ...
 
 @plot_smaps.register
 def _(
     config: CNNConfig, 
-    **cam_params
+    **params
 ) -> None:
     """Plot saliency maps for the CNN."""
     cam = CNNCam(model_name=config.model_name)
-    cam.run(**cam_params)
+    cam.run(**params)
 
 
 @plot_smaps.register
 def _(
     config: ViTConfig,
-    **cam_params
+    **params
 ) -> None:
     """Plot saliency maps for the ViT."""
     cam = ViTCam(model_name=config.model_name)
-    cam.run(**cam_params)
+    cam.run(**params)
