@@ -30,7 +30,7 @@ import torch
 from PIL import Image
 
 from config import config
-from config.config import CNNConfig, ViTConfig
+from config.config import CNN_Config, ViT_Config
 import constants.constant as C
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image, preprocess_image
@@ -274,10 +274,10 @@ class ViTCam(Cam):
 def cam_for(_: config.Config) -> Type[Cam]: ...
 
 @cam_for.register
-def _(cfg: CNNConfig) -> Type[Cam]: return CNNCam
+def _(cfg: CNN_Config) -> Type[Cam]: return CNNCam
 
 @cam_for.register
-def _(cfg: ViTConfig) -> Type[Cam]: return ViTCam
+def _(cfg: ViT_Config) -> Type[Cam]: return ViTCam
 
 def plot_smaps(
     cfg: config.Config, 
@@ -287,7 +287,7 @@ def plot_smaps(
     Plot saliency maps for the appropriate architecture branching on config type.
 
     Args:
-        cfg: Configuration object (CNNConfig or ViTConfig).
+        cfg: Configuration object (CNN_Config or ViT_Config).
         params: Additional grad-cam related parameters.
     """
     cam_cls = cam_for(cfg)

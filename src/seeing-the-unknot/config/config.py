@@ -50,7 +50,7 @@ class Config(ABC):
 
 
 @dataclass(frozen=True, kw_only=True)
-class CNNConfig(Config):
+class CNN_Config(Config):
     learning_rate:       float = 9e-05
     batch_size:            int = 8
     weight_decay:        float = 2e-06
@@ -72,7 +72,7 @@ class CNNConfig(Config):
         return Config.get_git_root() / "runs" / "cnn"
 
 @dataclass(frozen=True, kw_only=True)
-class ViTConfig(Config):
+class ViT_Config(Config):
     learning_rate:       float = 3e-05
     batch_size:            int = 8
     weight_decay:        float = 0.05
@@ -95,7 +95,7 @@ class ViTConfig(Config):
 
 
 OPTIONS: dict[str, Config] = {
-    "cnn": CNNConfig(),
-    "vit": ViTConfig(),
+    "cnn": CNN_Config(),
+    "vit": ViT_Config(),
 }
 
