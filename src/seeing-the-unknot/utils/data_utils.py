@@ -20,7 +20,7 @@ import glob
 import os
 import random
 from pathlib import Path
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 from torch.utils.data import DataLoader
 from torchvision import transforms
