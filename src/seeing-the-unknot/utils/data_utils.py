@@ -67,8 +67,8 @@ def create_datasets(
 
     for split, (image_paths, labels) in splits.items():
         datasets[split] = KnotDataset(
-            image_paths=image_paths[:50],
-            labels=labels[:50],
+            image_paths=image_paths,
+            labels=labels,
             transform=get_transformation()
         )
 
