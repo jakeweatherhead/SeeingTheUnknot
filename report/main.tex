@@ -1,17 +1,10 @@
 \documentclass[11pt]{article}
+\usepackage[a4paper, top=0.3in, bottom=0.9in, left=0.6in, right=0.6in]{geometry}
 
 \usepackage{sectsty}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{float}
-
-% Margins
-\topmargin=-0.55in
-\evensidemargin=0in
-\oddsidemargin=0in
-\textwidth=6.5in
-\textheight=9.0in
-\headsep=0.25in
 
 \title{ \bf Results: [20, 35] Crossings }
 \author{ Jake Weatherhead }
@@ -21,21 +14,24 @@
 \maketitle	
 
 \noindent
-The same CNN and ViT used in the initial study were fine-tuned on a new dataset $\mathcal{D}$, where:\\
+The CNN (88M params) and the ViT (86M params) were fine-tuned on a new dataset $\mathcal{D}$ where:\\
 
 \[
 \begin{gathered}
-\mathcal{D} \; = \; \mathcal{D}_{\mathrm{train}} \; \cup \; \mathcal{D}_{\mathrm{val}} \; \cup \; \mathcal{D}_{\mathrm{test}}  \\[0.5em]
-|\mathcal{D}| \; = \; 560,000 \text{ diagrams} \\[0.5em]
-|\mathcal{D}_{\mathrm{train}}| \; = \; 448{,}000 \text{ diagrams} \\[0.5em]
-|\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 56{,}000 \text{ diagrams}.
+\mathcal{D} \; = \; \mathcal{D}_{\mathrm{train}} \; \cup \; \mathcal{D}_{\mathrm{val}} \; \cup \; \mathcal{D}_{\mathrm{test}}, \\[0.5em]
+|\mathcal{D}| = 560{,}000 \,\text{ diagrams, } \\[0.5em]
+|\mathcal{D}_{\mathrm{train}}| \; = \; 448{,}000 \text{ diagrams,} \\[0.5em]
+|\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 56{,}000 \text{ diagrams}, \\[0.5em]
+\forall x \in \{\mathcal{D}_{\mathrm{train}}, \, \mathcal{D}_{\mathrm{val}}, \, \mathcal{D}_{\mathrm{test}}\}, \; x \in \mathcal{U} \, \cup \, \mathcal{K} \; \text{ and } \; |\mathcal{U}| = |\mathcal{K}|, \\[0.5em]
 \end{gathered}
 \]\\
 
 
 \noindent
-Each split in $\mathcal{D}$ included knots with $n$ crossings where $n \in \{20, \,21, \, \ldots \,, \,35\}$.
-For all values of $n$, splits contained an equal number of $n$-crossing unknot and non-trivial knot diagrams.
+Each split in $\mathcal{D}$ included knots with $n$ crossings where $n \in N := \{20, \,21, \, \ldots \,, \,35\}$.
+For all distinct $a, b \in N$, each split contained an equal number of $a$-crossing and $b$-crossing unknot and non-trivial knot diagrams.
+
+\section*{Learning Curves}
 
 \begin{figure}[H]
    \centering
@@ -45,7 +41,9 @@ For all values of $n$, splits contained an equal number of $n$-crossing unknot a
 \end{figure}
 
 \newpage
-\section*{CNN Results}
+\section*{CNN Saliency Maps}
+
+Saliency maps for knots in $\mathcal{D}_{test}$ from the CNN that performed the best on $\mathcal{D}_{test}$.
 
 % Here, add the test accuracy by crossing count.
 
@@ -55,8 +53,9 @@ For all values of $n$, splits contained an equal number of $n$-crossing unknot a
 \subsection*{CNN FP: True Knots Predicted as Unknots}
 
 \newpage
-\section*{ViT Results}
+\section*{ViT Saliency Maps}
 
+Saliency maps for knots in $\mathcal{D}_{test}$ from the ViT that performed the best on $\mathcal{D}_{test}$.
 % Here, add the test accuracy by crossing count.
 
 \subsection*{ViT TP: True Unknots Predicted as Unknots}
