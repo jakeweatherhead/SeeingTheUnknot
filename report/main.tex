@@ -20,18 +20,18 @@ diagrams partitioned into three disjoint data splits $S = \{\mathcal{D}_{\mathrm
 
 \[
 \begin{gathered}
-\mathcal{D} = \biguplus_{s \in S} s \\[0.5em]
+\mathcal{D} \; = \; \biguplus_{s \in S} s \\[0.5em]
 |\mathcal{D}| \; = \; 560{,}000 \,\text{ diagrams, } \\[0.5em]
 |\mathcal{D}_{\mathrm{train}}| \; = \; 0.8 \cdot |\mathcal{D}| \; = \; 448{,}000 \text{ diagrams,} \\[0.5em]
 |\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 0.1 \cdot |\mathcal{D}| \; = \; 56{,}000 \text{ diagrams}, \\[0.5em]
-\text{where } \; \forall s \in S, \;\, s \in \; \mathcal{U} \, \cup \, \mathcal{K} \;\; \text{ and } \;\; |\mathcal{U}| = |\mathcal{K}|. \\[0.5em]
+\text{where } \; \forall s \in S, \;\, s \in \; \mathcal{U} \, \cup \, \mathcal{K} \; \text{ and } \; |\mathcal{U}| = |\mathcal{K}|. \\[0.5em]
 \end{gathered}
 \]\\
 
 
 \noindent
-Each split in $\mathcal{D}$ contained knots with $n \in N := \{20, \,21, \, \ldots \,, \,35\}$ crossings.
-For all distinct $a, b \in N$, each split in $S$ contained an equal number of $a$ and $b$-crossing unknot and non-trivial knot diagrams.
+Each split in $S$ contained knots with $n \in N := \{20, \,21, \, \ldots \,, \,35\}$ crossings.
+For all distinct $a, b \in N$, each split contained an equal number of $a$-crossing and $b$-crossing unknot and non-trivial knot diagrams.
 
 \section*{Learning Curves}
 
@@ -43,10 +43,9 @@ For all distinct $a, b \in N$, each split in $S$ contained an equal number of $a
 \end{figure}
 
 \newpage
-\vspace{3em}
 \section*{CNN* Saliency Maps}
 
-Saliency maps from the best-performing CNN (CNN*) on $\mathcal{D}_{\mathrm{test}}$.
+Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ for the best-performing CNN (CNN*).
 
 % Here, add the test accuracy by crossing count.
 
@@ -58,7 +57,7 @@ Saliency maps from the best-performing CNN (CNN*) on $\mathcal{D}_{\mathrm{test}
 \newpage
 \section*{ViT* Saliency Maps}
 
-Saliency maps from the best-performing ViT (ViT*) on $\mathcal{D}_{\mathrm{test}}$.
+Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ for the best-performing ViT (ViT*).
 % Here, add the test accuracy by crossing count.
 
 \subsection*{ViT TP: True Unknots Predicted as Unknots}
