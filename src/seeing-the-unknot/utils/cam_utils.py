@@ -272,10 +272,8 @@ class ViT_Cam(Cam):
 
 @singledispatch
 def cam_for(_: config.Config) -> Type[Cam]: ...
-
 @cam_for.register
 def _(_: CNN_Config) -> Type[Cam]: return CNN_Cam
-
 @cam_for.register
 def _(_: ViT_Config) -> Type[Cam]: return ViT_Cam
 
