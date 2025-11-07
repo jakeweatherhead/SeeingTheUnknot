@@ -52,11 +52,11 @@ class Cam(ABC):
         self, 
         model_path: str
     ) -> None:
-        """Load the trained model from checkpoint."""
+        """Load the checkpoint model."""
         self._model = timm.create_model(
             self.model_name, 
             pretrained=False, 
-            num_classes=2
+            num_classes=C.NUM_CLASSES
         )
         ckpt = torch.load(model_path, map_location=self.device)
         self._model.load_state_dict(ckpt)
@@ -86,11 +86,11 @@ class Cam(ABC):
         with torch.no_grad():
             outputs = self._model(input_tensor)
             probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
-            predicted_class = torch.argmax(outputs, 1).item()
-            confidence = probabilities[predicted_class].item()
+            pred_class = torch.argmax(outputs, 1).item()
+            conf = probabilities[pred_class].item()
         
-        class_name = ["KNOT", "UNKNOT"][predicted_class]
-        return predicted_class, confidence, class_name
+        class_name = ["KNOT", "UNKNOT"][pred_class]
+        return pred_class, conf, class_name
     
     @abstractmethod
     def compute_smaps(
@@ -106,29 +106,28 @@ class Cam(ABC):
         cam_image: np.ndarray, 
         image_path: str, 
         true_label: int, 
-        predicted_label: str, 
+        pred_label: str, 
         confidence: float,
         output_dir: str
     ) -> None:
         """Save saliency map with consistent naming and directory structure."""
-        knot_type = 'knots' if true_label == 0 else 'unknots'
+        group = 'knots' if true_label == 0 else 'unknots'
         
-        true_class = true_label
-        predicted_class = 0 if predicted_label == "KNOT" else 1
+        pred_label = 0 if pred_label == "KNOT" else 1
+
+        if group == 'knots':
+            confusion_category = 'TN' if true_label == pred_label else 'FP'
+        else:  # 'unknots' 
+            confusion_category = 'TP' if true_label == pred_label else 'FN'
         
-        if knot_type == 'knots':
-            confusion_category = 'TN' if true_class == predicted_class else 'FP'
-        else:
-            confusion_category = 'TP' if true_class == predicted_class else 'FN'
-        
-        final_output_dir = os.path.join(output_dir, knot_type, confusion_category)
+        final_output_dir = os.path.join(output_dir, group, confusion_category)
         os.makedirs(final_output_dir, exist_ok=True)
         
-        true_label_str = ['KNOT', 'UNKNOT'][true_label]
+        true_label = ['KNOT', 'UNKNOT'][true_label]
         image_name = os.path.splitext(os.path.basename(image_path))[0]
         output_path = os.path.join(
             final_output_dir, 
-            f'{image_name}_T_{true_label_str}_P_{predicted_label}_C_{confidence:.3f}.jpg'
+            f'{image_name}_T_{true_label}_P_{pred_label}_C_{confidence:.3f}.jpg'
         )
         cv2.imwrite(output_path, cam_image)
     
@@ -141,14 +140,32 @@ class Cam(ABC):
         """Process a single image and save its saliency map."""
         try:
             rgb_img, input_tensor = self.preprocess_image(image_path)
-            predicted_class, confidence, predicted_label = self.predict_with_model(input_tensor)
-            grayscale_cam = self.compute_smaps(input_tensor, predicted_class)
+
+            pred_class, confidence, pred_label = self.predict_with_model(input_tensor)
+
+            grayscale_cam = self.compute_smaps(
+                input_tensor, 
+                pred_class
+            )
             
-            cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
-            cam_image = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
+            cam_image = show_cam_on_image(
+                rgb_img, 
+                grayscale_cam, 
+                use_rgb=True
+            )
+
+            cam_image = cv2.cvtColor(
+                cam_image, 
+                cv2.COLOR_RGB2BGR
+            )
             
             self.save_saliency_map(
-                cam_image, image_path, true_label, predicted_label, confidence, output_dir
+                cam_image, 
+                image_path, 
+                true_label, 
+                pred_label, 
+                confidence, 
+                output_dir
             )
             
         except Exception as e:
@@ -160,15 +177,15 @@ class Cam(ABC):
         ckpt_paths: List[Path]
     ) -> None:
         """
-        Generate saliency maps for all images in dataset.
+        Generate saliency maps for all images in 'dataset'.
         
         Args:
-            dataset: Dataset containing image paths and labels
+            dataset:    KnotDataset containing image paths and labels
             ckpt_paths: Paths to checkpoint models
         """
         for ckpt_path in ckpt_paths:
             self.load_model(str(ckpt_path))
-            output_dir = ckpt_path.parent / "saliency_maps"
+            output_dir = ckpt_path.parent / "smaps"
             
             for image_id in range(len(dataset)):
                 self.process_image(
@@ -190,14 +207,15 @@ class CamCNN(Cam):
     def compute_smaps(
         self, 
         input_tensor: torch.Tensor, 
-        predicted_class: int
+        pred_class: int
     ) -> np.ndarray:
         """Compute Grad-CAM for the CNN."""
         cam = GradCAM(
             model=self._model, 
             target_layers=[self._model.stages[-1]]
         )
-        targets = [ClassifierOutputTarget(predicted_class)]
+
+        targets = [ClassifierOutputTarget(pred_class)]
         
         return cam(
             input_tensor=input_tensor, 
@@ -217,7 +235,7 @@ class CamViT(Cam):
     def compute_smaps(
         self, 
         input_tensor: torch.Tensor, 
-        predicted_class: int
+        pred_class: int
     ) -> np.ndarray:
         """Compute attention rollout."""
         attn_weights = []
