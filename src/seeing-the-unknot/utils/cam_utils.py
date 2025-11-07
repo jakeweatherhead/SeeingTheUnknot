@@ -180,7 +180,7 @@ class Cam(ABC):
                 )
 
 
-class CNNCam(Cam):
+class CNN_Cam(Cam):
     """CNN saliency map generator using Grad-CAM."""
     
     def __init__(
@@ -204,7 +204,7 @@ class CNNCam(Cam):
         )[0, :]  # First image, all spatial dimensions
 
 
-class ViTCam(Cam):
+class ViT_Cam(Cam):
     """ViT saliency map generator using attention rollout."""
     
     def __init__(
@@ -274,10 +274,10 @@ class ViTCam(Cam):
 def cam_for(_: config.Config) -> Type[Cam]: ...
 
 @cam_for.register
-def _(cfg: CNN_Config) -> Type[Cam]: return CNNCam
+def _(cfg: CNN_Config) -> Type[Cam]: return CNN_Cam
 
 @cam_for.register
-def _(cfg: ViT_Config) -> Type[Cam]: return ViTCam
+def _(cfg: ViT_Config) -> Type[Cam]: return ViT_Cam
 
 def plot_smaps(
     cfg: config.Config, 
