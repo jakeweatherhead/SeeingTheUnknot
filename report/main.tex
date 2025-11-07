@@ -24,24 +24,27 @@ The 88M-parameter $\textsc{CNN}$ was fine-tuned on $\mathcal{D}_{\text{train}}$,
 validated on $\mathcal{D}_{\text{val}}$, and tested on $\mathcal{D}_{\text{test}}$, where:\\
 
 \[
-\begin{aligned}
-&|\mathcal{D}_{\text{train}}| \; = \; 448{,}000 \text{ diagrams}, \\[0.5em]
-&|\mathcal{D}_{\text{val}}| \; = \; |\mathcal{D}_{\text{test}}| \; = \; 56{,}000 \text{ diagrams}, \\[0.5em]
-&\mathcal{D} \; = \; \mathcal{D}_{\text{train}} \; \cup \; \mathcal{D}_{\text{val}} \; \cup \; \mathcal{D}_{\text{test}}.
-\end{aligned}
+\begin{gathered}
+|\mathcal{D}_{\mathrm{train}}| = 448{,}000 \text{ diagrams}, \\[0.5em]
+|\mathcal{D}_{\mathrm{val}}| = |\mathcal{D}_{\mathrm{test}}| = 56{,}000 \text{ diagrams}, \\[0.5em]
+\mathcal{D} = \mathcal{D}_{\mathrm{train}} \cup \mathcal{D}_{\mathrm{val}} \cup \mathcal{D}_{\mathrm{test}}.
+\end{gathered}
 \]\\
 
+
 \noindent
-For each split in $\mathcal{D}$, each knot had $n \in N$ crossings where $N=[20,35]$. For all splits, and all
-values of $n$, there was a exact parity of knots and unknots and there were an equal number of diagrams for each value of $n \in N$.
+Each split in $\mathcal{D}$ contained an equal number of knots with $n \in N$ crossings where $N=\{20, 21, \dots ,35\}$. Each
+split contained an equal number of non-trivial knots and unknots for all values of $n$.
+
+
 
 \section*{Results}
 
 % Here, add the test accuracy by crossing count.
 
-\subsection*{TP: True Knots Predicted as Knots}
-\subsection*{FN: True Knots Predicted as Knots}
+\subsection*{TP: True Unknots Predicted as Unknots}
+\subsection*{FN: True Unknots Predicted as Knots}
 \subsection*{TN: True Knots Predicted as Knots}
-\subsection*{FP: True Knots Predicted as Unnots}
+\subsection*{FP: True Knots Predicted as Unknots}
 
 \end{document}
