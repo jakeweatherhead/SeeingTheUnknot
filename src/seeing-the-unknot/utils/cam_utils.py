@@ -180,7 +180,7 @@ class Cam(ABC):
 
 
 class CamCNN(Cam):
-    """CNN saliency map generator using Grad-CAM."""
+    """Generate saliency maps for the CNN using Grad-CAM."""
     
     def __init__(
         self, 
@@ -193,7 +193,7 @@ class CamCNN(Cam):
         input_tensor: torch.Tensor, 
         predicted_class: int
     ) -> np.ndarray:
-        """Compute Grad-CAM for the CNN model."""
+        """Compute Grad-CAM for the CNN."""
         cam = GradCAM(
             model=self._model, 
             target_layers=[self._model.stages[-1]]
