@@ -287,7 +287,7 @@ def plot_smaps(
 
     Args:
         cfg:    Global configuration values, ConfigCNN or ConfigViT.
-        params: Additional grad-cam parameters.
+        params: Grad-cam parameters.
     """
     cam_cls = cam_for(cfg)
     cam = cam_cls()
