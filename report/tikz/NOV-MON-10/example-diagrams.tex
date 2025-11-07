@@ -1,0 +1,36 @@
+\documentclass{article}
+
+% Optional page setup
+\usepackage[a4paper,margin=1in]{geometry}
+
+% Packages
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{matrix}
+\usepackage{amsmath} % for good measure (not strictly required here)
+
+\begin{document}
+
+\begin{figure}[ht]
+  \centering
+  % adjust this to fit your page
+  \newcommand{\imgw}{0.22\textwidth}
+
+  \begin{tikzpicture}
+    \matrix (m) [matrix of nodes, row sep=6mm, column sep=1mm]
+    {
+      \node{\includegraphics[width=\imgw]{U_35_17001_zoom1.5_rot58.6.png}}; &
+      \node{\includegraphics[width=\imgw]{U_35_17064_zoom1.7_rot141.0.png}}; &
+      \node{\includegraphics[width=\imgw]{U_35_17195_zoom1.4_rot254.0.png}}; &
+      \node{\includegraphics[width=\imgw]{U_35_17232_zoom1.5_rot325.3.png}}; \\
+      \node{\includegraphics[width=\imgw]{K_35_10299_zoom1.5_rot161.9.png}}; &
+      \node{\includegraphics[width=\imgw]{K_35_10327_zoom1.4_rot173.4.png}}; &
+      \node{\includegraphics[width=\imgw]{K_35_10360_zoom1.6_rot234.3.png}}; &
+      \node{\includegraphics[width=\imgw]{K_35_10417_zoom1.5_rot269.8.png}}; \\
+    };
+  \end{tikzpicture}
+
+  \caption{35-crossing unknots (top row) and non-trivial knots (bottom row) in $\mathcal{D}_{\mathrm{test}}$.}
+\end{figure}
+
+\end{document}
