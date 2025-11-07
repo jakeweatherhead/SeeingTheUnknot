@@ -280,7 +280,7 @@ def _(_: ConfigViT) -> Type[Cam]: return CamViT
 
 def plot_smaps(
     cfg: config.Config, 
-    **params
+    **gc_params
 ) -> None:
     """
     Plot saliency maps for the given architecture.
@@ -291,4 +291,4 @@ def plot_smaps(
     """
     cam_cls = cam_for(cfg)
     cam = cam_cls()
-    cam.run(**params)
+    cam.run(**gc_params)
