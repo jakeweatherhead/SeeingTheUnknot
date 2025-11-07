@@ -228,7 +228,7 @@ class CamViT(Cam):
             qkv = module.qkv(input[0]).reshape(
                 B, N, 3, module.num_heads, C // module.num_heads
             ).permute(2, 0, 3, 1, 4)
-            q, k, v = qkv.unbind(0)
+            q, k, _ = qkv.unbind(0)
             
             attn = (q @ k.transpose(-2, -1)) * module.scale
             attn = attn.softmax(dim=-1)
