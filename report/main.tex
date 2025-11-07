@@ -14,17 +14,17 @@
 \maketitle	
 
 \noindent
-The CNN (88M params) and the ViT (86M params) were fine-tuned on a new dataset $\mathcal{D}$ comprising unknots $\mathcal{U}$ and non-trivial knots $\mathcal{K}$
-partitioned into three disjoint data splits $S = \{\mathcal{D}_{\mathrm{train}}, 
+The CNN (88M params) and ViT (86M params) were fine-tuned on a new dataset $\mathcal{D}$ comprising unknot $\mathcal{U}$ and non-trivial knot $\mathcal{K}$
+diagrams partitioned into three disjoint data splits $S = \{\mathcal{D}_{\mathrm{train}}, 
 \mathcal{D}_{\mathrm{val}}, \mathcal{D}_{\mathrm{test}}\}$, where:\\
 
 \[
 \begin{gathered}
-\mathcal{D} = \bigsqcup_{s \in S} s \\[0.5em]
+\mathcal{D} = \biguplus_{s \in S} s \\[0.5em]
 |\mathcal{D}| \; = \; 560{,}000 \,\text{ diagrams, } \\[0.5em]
 |\mathcal{D}_{\mathrm{train}}| \; = \; 0.8 \cdot |\mathcal{D}| \; = \; 448{,}000 \text{ diagrams,} \\[0.5em]
 |\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 0.1 \cdot |\mathcal{D}| \; = \; 56{,}000 \text{ diagrams}, \\[0.5em]
-\forall s \in S, \;\, s \in \; \mathcal{U} \, \cup \, \mathcal{K} \;\; \text{ and } \;\; |\mathcal{U}| = |\mathcal{K}|. \\[0.5em]
+\text{where } \; \forall s \in S, \;\, s \in \; \mathcal{U} \, \cup \, \mathcal{K} \;\; \text{ and } \;\; |\mathcal{U}| = |\mathcal{K}|. \\[0.5em]
 \end{gathered}
 \]\\
 
@@ -38,26 +38,27 @@ For all distinct $a, b \in N$, each split in $S$ contained an equal number of $a
 \begin{figure}[H]
    \centering
    \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/example-diagrams.pdf}
-   \caption{35 crossing unknots (top row) and non-trivial knots (bottom row) in $\mathcal{D}_{\mathrm{test}}$.}
+   \caption{TBC}
    \label{fig:examples-nov-mon}
 \end{figure}
 
 \newpage
-\section*{CNN Saliency Maps}
+\vspace{3em}
+\section*{CNN* Saliency Maps}
 
-Saliency maps for knots in $\mathcal{D}_{test}$ from the CNN that performed the best on $\mathcal{D}_{test}$.
+Saliency maps from the best-performing CNN (CNN*) on $\mathcal{D}_{\mathrm{test}}$.
 
 % Here, add the test accuracy by crossing count.
 
-\subsection*{CNN TP: True Unknots Predicted as Unknots}
-\subsection*{CNN FN: True Unknots Predicted as Knots}
-\subsection*{CNN TN: True Knots Predicted as Knots}
-\subsection*{CNN FP: True Knots Predicted as Unknots}
+\subsection*{CNN* True Positives: True Unknots Predicted as Unknots}
+\subsection*{CNN* False Negatives: True Unknots Predicted as Knots}
+\subsection*{CNN* True Negatives: True Knots Predicted as Knots}
+\subsection*{CNN* False Positives: True Knots Predicted as Unknots}
 
 \newpage
-\section*{ViT Saliency Maps}
+\section*{ViT* Saliency Maps}
 
-Saliency maps for knots in $\mathcal{D}_{test}$ from the ViT that performed the best on $\mathcal{D}_{test}$.
+Saliency maps from the best-performing ViT (ViT*) on $\mathcal{D}_{\mathrm{test}}$.
 % Here, add the test accuracy by crossing count.
 
 \subsection*{ViT TP: True Unknots Predicted as Unknots}
