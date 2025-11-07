@@ -71,12 +71,12 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmex10.tfm
-INPUT ./tikz/NOV-MON-10/example-diagrams.png
-INPUT ./tikz/NOV-MON-10/example-diagrams.png
-INPUT ./tikz/NOV-MON-10/example-diagrams.png
-INPUT ./tikz/NOV-MON-10/example-diagrams.png
+INPUT ./tikz/NOV-MON-10/example-diagrams.pdf
+INPUT ./tikz/NOV-MON-10/example-diagrams.pdf
+INPUT ./tikz/NOV-MON-10/example-diagrams.pdf
+INPUT ./tikz/NOV-MON-10/example-diagrams.pdf
 OUTPUT main.pdf
-INPUT ./tikz/NOV-MON-10/example-diagrams.png
+INPUT ./tikz/NOV-MON-10/example-diagrams.pdf
 INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm

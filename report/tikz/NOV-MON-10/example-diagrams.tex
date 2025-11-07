@@ -1,23 +1,12 @@
-\documentclass{article}
-
-% Optional page setup
-\usepackage[a4paper,margin=1in]{geometry}
-
-% Packages
-\usepackage{graphicx}
+\documentclass{standalone}
 \usepackage{tikz}
+\usepackage{amsmath,graphicx}
 \usetikzlibrary{matrix}
-\usepackage{amsmath} % for good measure (not strictly required here)
 
 \begin{document}
-
-\begin{figure}[ht]
-  \centering
-  % adjust this to fit your page
-  \newcommand{\imgw}{0.22\textwidth}
-
   \begin{tikzpicture}
-    \matrix (m) [matrix of nodes, row sep=6mm, column sep=1mm]
+    \newcommand{\imgw}{0.22\textwidth}
+    \matrix (m) [matrix of nodes, row sep=1mm, column sep=1mm]
     {
       \node{\includegraphics[width=\imgw]{U_35_17001_zoom1.5_rot58.6.png}}; &
       \node{\includegraphics[width=\imgw]{U_35_17064_zoom1.7_rot141.0.png}}; &
@@ -29,8 +18,25 @@
       \node{\includegraphics[width=\imgw]{K_35_10417_zoom1.5_rot269.8.png}}; \\
     };
   \end{tikzpicture}
-
-  \caption{35-crossing unknots (top row) and non-trivial knots (bottom row) in $\mathcal{D}_{\mathrm{test}}$.}
-\end{figure}
-
 \end{document}
+
+% \documentclass{standalone}
+% \usepackage{tikz}
+% \usetikzlibrary{positioning}
+% \usepackage{amsmath,graphicx}
+
+% \begin{document}
+% \begin{tikzpicture}
+%   \node (img) {\includegraphics[width=.9\textwidth]{top.png}};
+%   \node[below=8mm of img] {
+%     \scalebox{1.3}{$
+%       \left(
+%         \begin{array}{ccccccccc}
+%           3 & 8 & 9 & 1 & 6 & 2 & 4 & 5 & 7 \\
+%           1 & 2 & 6 & 5 & 3 & 4 & 7 & 8 & 9
+%         \end{array}
+%       \right)
+%     $}
+%   };
+% \end{tikzpicture}
+% \end{document}
