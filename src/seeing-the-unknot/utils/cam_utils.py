@@ -274,10 +274,10 @@ class ViT_Cam(Cam):
 def cam_for(_: config.Config) -> Type[Cam]: ...
 
 @cam_for.register
-def _(cfg: CNN_Config) -> Type[Cam]: return CNN_Cam
+def _(_: CNN_Config) -> Type[Cam]: return CNN_Cam
 
 @cam_for.register
-def _(cfg: ViT_Config) -> Type[Cam]: return ViT_Cam
+def _(_: ViT_Config) -> Type[Cam]: return ViT_Cam
 
 def plot_smaps(
     cfg: config.Config, 
