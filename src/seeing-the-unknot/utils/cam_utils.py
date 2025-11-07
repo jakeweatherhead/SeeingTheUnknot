@@ -286,7 +286,7 @@ def plot_smaps(
     Plot saliency maps for the given architecture.
 
     Args:
-        cfg:    Global configuration object, ConfigCNN or ConfigViT.
+        cfg:    Global configuration values, ConfigCNN or ConfigViT.
         params: Additional grad-cam parameters.
     """
     cam_cls = cam_for(cfg)
