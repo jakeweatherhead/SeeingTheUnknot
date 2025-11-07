@@ -19,10 +19,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from model.trial import Trial
+from pathlib import Path
 
 
-def main(_):
-    Trial().run()
+def main():
+    Trial()._run_tests(
+        trial_dir=Path('/home/jake/Personal/SeeingTheUnknot/runs/cnn/trial_06_NOV_2025_14:55:30'),
+        results_json=Path('/home/jake/Personal/SeeingTheUnknot/runs/cnn/trial_06_NOV_2025_14:55:30/trial_06_NOV_2025_14:55:30_results.json')
+    )
 
 if __name__ == "__main__":
     try:
