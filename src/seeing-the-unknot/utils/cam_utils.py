@@ -283,7 +283,7 @@ def plot_smaps(
     **gc_params
 ) -> None:
     """
-    Plot saliency maps for the given architecture.
+    Plot saliency maps for the given architecture, CNN or ViT.
 
     Args:
         cfg:    Global configuration values, ConfigCNN or ConfigViT.
