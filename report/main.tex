@@ -20,31 +20,29 @@
 \maketitle	
 
 \noindent
-The 88M-parameter $\textsc{CNN}$ was fine-tuned on $\mathcal{D}_{\text{train}}$,
-validated on $\mathcal{D}_{\text{val}}$, and tested on $\mathcal{D}_{\text{test}}$, where:\\
+The same CNN and ViT used in the initial study were fine-tuned on a new dataset $\mathcal{D}$, where:\\
 
 \[
 \begin{gathered}
-|\mathcal{D}_{\mathrm{train}}| = 448{,}000 \text{ diagrams}, \\[0.5em]
-|\mathcal{D}_{\mathrm{val}}| = |\mathcal{D}_{\mathrm{test}}| = 56{,}000 \text{ diagrams}, \\[0.5em]
-\mathcal{D} = \mathcal{D}_{\mathrm{train}} \cup \mathcal{D}_{\mathrm{val}} \cup \mathcal{D}_{\mathrm{test}}.
+\mathcal{D} \; = \; \mathcal{D}_{\mathrm{train}} \; \cup \; \mathcal{D}_{\mathrm{val}} \; \cup \; \mathcal{D}_{\mathrm{test}},  \\[0.5em]
+|\mathcal{D}| \; = \; 560,000 \text{ diagrams}, \\[0.5em]
+|\mathcal{D}_{\mathrm{train}}| \; = \; 448{,}000 \text{ diagrams}, \\[0.5em]
+|\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 56{,}000 \text{ diagrams}.
 \end{gathered}
 \]\\
 
 
 \noindent
-Each split in $\mathcal{D}$ contained an equal number of knots with $n \in N$ crossings where $N=\{20, 21, \dots ,35\}$. Each
-split contained an equal number of non-trivial knots and unknots for all values of $n$.
+All splits contained knots with $n$ crossings where $n \in N$ and $N=\{20, \,21, \dots , \,35\}$. Each crossing count $n$ contributed
+equally to a split. In each split, there were an equal number of unknots and non-trivial knots with $n$ crossings.
 
-
-
-\section*{Results}
+\section*{CNN Results}
 
 % Here, add the test accuracy by crossing count.
 
-\subsection*{TP: True Unknots Predicted as Unknots}
-\subsection*{FN: True Unknots Predicted as Knots}
-\subsection*{TN: True Knots Predicted as Knots}
-\subsection*{FP: True Knots Predicted as Unknots}
+\subsection*{CNN TP: True Unknots Predicted as Unknots}
+\subsection*{CNN FN: True Unknots Predicted as Knots}
+\subsection*{CNN TN: True Knots Predicted as Knots}
+\subsection*{CNN FP: True Knots Predicted as Unknots}
 
 \end{document}
