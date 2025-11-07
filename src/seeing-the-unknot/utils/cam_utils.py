@@ -195,7 +195,10 @@ class CNN_Cam(Cam):
         predicted_class: int
     ) -> np.ndarray:
         """Compute Grad-CAM for the CNN model."""
-        cam = GradCAM(model=self._model, target_layers=[self._model.stages[-1]])
+        cam = GradCAM(
+            model=self._model, 
+            target_layers=[self._model.stages[-1]]
+        )
         targets = [ClassifierOutputTarget(predicted_class)]
         
         return cam(
@@ -219,7 +222,7 @@ class ViT_Cam(Cam):
         predicted_class: int
     ) -> np.ndarray:
         """Compute attention rollout."""
-        attention_weights = []
+        attn_weights = []
         
         def attn_hook(module, input, output):
             B, N, C = input[0].shape
@@ -231,7 +234,7 @@ class ViT_Cam(Cam):
             attn = (q @ k.transpose(-2, -1)) * module.scale
             attn = attn.softmax(dim=-1)
             
-            attention_weights.append(attn.cpu().detach())
+            attn_weights.append(attn.cpu().detach())
         
         hooks = []
         for block in self._model.blocks:
@@ -244,30 +247,30 @@ class ViT_Cam(Cam):
         for hook in hooks:
             hook.remove()
         
-        attention_maps = []
-        for attn in attention_weights:
+        attn_maps = []
+        for attn in attn_weights:
             attn = attn.mean(dim=1)
             
             residual_att = torch.eye(attn.size(-1))
             aug_att_mat = attn + residual_att
             aug_att_mat = aug_att_mat / aug_att_mat.sum(dim=-1, keepdim=True)
             
-            attention_maps.append(aug_att_mat[0])
+            attn_maps.append(aug_att_mat[0])
         
-        rollout = attention_maps[0]
-        for attention_map in attention_maps[1:]:
-            rollout = torch.matmul(rollout, attention_map)
+        rollout = attn_maps[0]
+        for attn_map in attn_maps[1:]:
+            rollout = torch.matmul(rollout, attn_map)
         
         cls_attention = rollout[0, 1:]
         
-        patches_per_side = 14  # 224/16 for ViT
+        patches_per_side = 14
 
-        attention_map = cls_attention.reshape(patches_per_side, patches_per_side)
-        attention_map = attention_map.numpy()
-        attention_map = cv2.resize(attention_map, (224, 224))
-        attention_map = (attention_map - attention_map.min()) / (attention_map.max() - attention_map.min())
+        attn_map = cls_attention.reshape(patches_per_side, patches_per_side)
+        attn_map = attn_map.numpy()
+        attn_map = cv2.resize(attn_map, (224, 224))
+        attn_map = (attn_map - attn_map.min()) / (attn_map.max() - attn_map.min())
         
-        return attention_map
+        return attn_map
 
 
 @singledispatch
