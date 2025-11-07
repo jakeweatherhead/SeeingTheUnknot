@@ -30,7 +30,7 @@ import torch
 from PIL import Image
 
 from config import config
-from config.config import CNN_Config, ViT_Config
+from config.config import ConfigCNN, ConfigViT
 import constants.constant as C
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image, preprocess_image
@@ -100,7 +100,7 @@ class Cam(ABC):
         predicted_class: int
     ) -> np.ndarray:
         """Compute saliency map for the given input."""
-        ...
+        ... # see CamCNN and CamViT
     
     def save_saliency_map(
         self, 
@@ -114,13 +114,12 @@ class Cam(ABC):
         """Save saliency map with consistent naming and directory structure."""
         knot_type = 'knots' if true_label == 0 else 'unknots'
         
-        # Determine confusion matrix category
         true_class = true_label
         predicted_class = 0 if predicted_label == "KNOT" else 1
         
-        if knot_type == 'knots':  # True label is knot
+        if knot_type == 'knots':
             confusion_category = 'TN' if true_class == predicted_class else 'FP'
-        else:  # True label is unknot
+        else:
             confusion_category = 'TP' if true_class == predicted_class else 'FN'
         
         final_output_dir = os.path.join(output_dir, knot_type, confusion_category)
@@ -180,7 +179,7 @@ class Cam(ABC):
                 )
 
 
-class CNN_Cam(Cam):
+class CamCNN(Cam):
     """CNN saliency map generator using Grad-CAM."""
     
     def __init__(
@@ -207,7 +206,7 @@ class CNN_Cam(Cam):
         )[0, :]  # First image, all spatial dimensions
 
 
-class ViT_Cam(Cam):
+class CamViT(Cam):
     """ViT saliency map generator using attention rollout."""
     
     def __init__(
@@ -276,9 +275,9 @@ class ViT_Cam(Cam):
 @singledispatch
 def cam_for(_: config.Config) -> Type[Cam]: ...
 @cam_for.register
-def _(_: CNN_Config) -> Type[Cam]: return CNN_Cam
+def _(_: ConfigCNN) -> Type[Cam]: return CamCNN
 @cam_for.register
-def _(_: ViT_Config) -> Type[Cam]: return ViT_Cam
+def _(_: ConfigViT) -> Type[Cam]: return CamViT
 
 def plot_smaps(
     cfg: config.Config, 
@@ -288,7 +287,7 @@ def plot_smaps(
     Plot saliency maps for the given architecture.
 
     Args:
-        cfg:    Configuration object (CNN_Config or ViT_Config).
+        cfg:    Configuration object (ConfigCNN or ConfigViT).
         params: Additional grad-cam parameters.
     """
     cam_cls = cam_for(cfg)
