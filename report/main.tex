@@ -19,17 +19,17 @@ The CNN (88M params) and the ViT (86M params) were fine-tuned on a new dataset $
 \[
 \begin{gathered}
 \mathcal{D} \; = \; \mathcal{D}_{\mathrm{train}} \; \cup \; \mathcal{D}_{\mathrm{val}} \; \cup \; \mathcal{D}_{\mathrm{test}}, \\[0.5em]
-|\mathcal{D}| = 560{,}000 \,\text{ diagrams, } \\[0.5em]
+|\mathcal{D}| \; = \; 560{,}000 \,\text{ diagrams, } \\[0.5em]
 |\mathcal{D}_{\mathrm{train}}| \; = \; 0.8 \cdot |\mathcal{D}| \; = \; 448{,}000 \text{ diagrams,} \\[0.5em]
 |\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 0.1 \cdot |\mathcal{D}| \; = \; 56{,}000 \text{ diagrams}, \\[0.5em]
-\forall x \in \{\mathcal{D}_{\mathrm{train}}, \, \mathcal{D}_{\mathrm{val}}, \, \mathcal{D}_{\mathrm{test}}\}, \; x \in \mathcal{U} \, \cup \, \mathcal{K} \; \text{ and } \; |\mathcal{U}| = |\mathcal{K}|, \\[0.5em]
+\forall x \in \{\mathcal{D}_{\mathrm{train}}, \, \mathcal{D}_{\mathrm{val}}, \, \mathcal{D}_{\mathrm{test}}\}, \; x \in \mathcal{U} \, \cup \, \mathcal{K} \; \text{ and } \; |\mathcal{U}| = |\mathcal{K}|. \\[0.5em]
 \end{gathered}
 \]\\
 
 
 \noindent
-Each split in $\mathcal{D}$ included knots with $n$ crossings where $n \in N := \{20, \,21, \, \ldots \,, \,35\}$.
-For all distinct $a, b \in N$, each split contained an equal number of $a$-crossing and $b$-crossing unknot and non-trivial knot diagrams.
+Each split in $\mathcal{D}$ contained knots with $n \in N := \{20, \,21, \, \ldots \,, \,35\}$ crossings.
+For all distinct $a, b \in N$, each split contained an equal number of $a$ and $b$-crossing unknot and non-trivial knot diagrams.
 
 \section*{Learning Curves}
 
