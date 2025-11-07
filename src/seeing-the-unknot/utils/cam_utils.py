@@ -99,7 +99,7 @@ class Cam(ABC):
         predicted_class: int
     ) -> np.ndarray:
         """Compute saliency map for the given input."""
-        ... # see CamCNN and CamViT
+        ...  # see CamCNN and CamViT
     
     def save_saliency_map(
         self, 
