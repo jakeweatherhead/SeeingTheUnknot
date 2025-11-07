@@ -38,14 +38,17 @@ def format_time_delta(secs: float) -> str:
         return f"{mins:02d}min {secs:05.2f}sec"
     return f"{secs:05.2f}sec"
 
-def set_random_seeds() -> None:
+def set_random_seeds(_) -> None:
     """Apply global seed to all components"""
     random.seed(C.GLOBAL_SEED)
     torch.manual_seed(C.GLOBAL_SEED)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(C.GLOBAL_SEED) 
 
-def safe_divide(n: int, d: int) -> float:
+def safe_divide(
+    n: int, 
+    d: int
+) -> float:
     """
     Safely calculate n / d.
 
@@ -110,7 +113,7 @@ def log_epoch_results(
         train['accuracy'] = train_results[0].accuracy
         train['loss']     = train_results[0].loss
 
-    eval_type = 'val' if train_results else 'test'
+    eval_type           = 'val' if train_results else 'test'
     eval                = epoch.setdefault(eval_type, {})
     eval['duration']    = eval_results[0].duration
     eval['accuracy']    = eval_results[0].accuracy
