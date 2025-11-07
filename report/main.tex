@@ -1,0 +1,47 @@
+\documentclass[11pt]{article}
+
+\usepackage{sectsty}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\title{ \bf CNN Results: 20-35 Crossings }
+\author{ Jake Weatherhead }
+\date{\today}
+
+\begin{document}
+\maketitle	
+
+\noindent
+The 88M-parameter $\textsc{CNN}$ was fine-tuned on $\mathcal{D}_{\text{train}}$,
+validated on $\mathcal{D}_{\text{val}}$, and tested on $\mathcal{D}_{\text{test}}$, where:\\
+
+\[
+\begin{aligned}
+&|\mathcal{D}_{\text{train}}| \; = \; 448{,}000 \text{ diagrams}, \\[0.5em]
+&|\mathcal{D}_{\text{val}}| \; = \; |\mathcal{D}_{\text{test}}| \; = \; 56{,}000 \text{ diagrams}, \\[0.5em]
+&\mathcal{D} \; = \; \mathcal{D}_{\text{train}} \; \cup \; \mathcal{D}_{\text{val}} \; \cup \; \mathcal{D}_{\text{test}}.
+\end{aligned}
+\]\\
+
+\noindent
+For each split in $\mathcal{D}$, each knot had $n \in N$ crossings where $N=[20,35]$. For all splits, and all
+values of $n$, there was a exact parity of knots and unknots and there were an equal number of diagrams for each value of $n \in N$.
+
+\section*{Results}
+
+% Here, add the test accuracy by crossing count.
+
+\subsection*{TP: True Knots Predicted as Knots}
+\subsection*{FN: True Knots Predicted as Knots}
+\subsection*{TN: True Knots Predicted as Knots}
+\subsection*{FP: True Knots Predicted as Unnots}
+
+\end{document}
