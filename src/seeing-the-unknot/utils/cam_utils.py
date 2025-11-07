@@ -40,7 +40,6 @@ from schema.dataset import KnotDataset
 
 class Cam(ABC):
     """Abstract base class for saliency map generators."""
-    
     def __init__(
         self, 
         model_name: str
