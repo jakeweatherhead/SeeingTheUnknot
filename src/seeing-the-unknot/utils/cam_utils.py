@@ -266,7 +266,7 @@ class CamViT(Cam):
 
         attn_map = cls_attention.reshape(patches_per_side, patches_per_side)
         attn_map = attn_map.numpy()
-        attn_map = cv2.resize(attn_map, (224, 224))
+        attn_map = cv2.resize(attn_map, C.IMAGENET_INPUT_DIMS)
         attn_map = (attn_map - attn_map.min()) / (attn_map.max() - attn_map.min())
         
         return attn_map
