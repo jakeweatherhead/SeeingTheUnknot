@@ -1,0 +1,22 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{amsmath,graphicx}
+\usetikzlibrary{matrix}
+
+\begin{document}
+  \begin{tikzpicture}
+    \newcommand{\imgw}{0.13\textwidth}
+
+    \matrix (m) [matrix of nodes, row sep=-0.5mm, column sep=0mm]
+    {
+      \node{\includegraphics[width=\imgw]{3/3.pdf}} &
+      \node{\includegraphics[width=\imgw]{./2/2.pdf}} \\
+
+      \node{\includegraphics[width=\imgw]{./3/3.pdf}} &
+      \node{\includegraphics[width=\imgw]{../vit/3/3.pdf}} \\
+
+      \node{\includegraphics[width=\imgw]{../vit/1/1.pdf}} &
+      \node{\includegraphics[width=\imgw]{../vit/2/2.pdf}} \\
+    };
+  \end{tikzpicture}
+\end{document}
