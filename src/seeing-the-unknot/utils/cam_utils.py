@@ -183,7 +183,10 @@ class Cam(ABC):
             dataset:    KnotDataset containing image paths and labels
             ckpt_paths: Paths to checkpoint models
         """
+
         for ckpt_path in ckpt_paths:
+            print(f'Generating saliency maps for ckpt_path: {Path(ckpt_path.name)}')
+            # self.create_smap_dirs(ckpt_path.parent)
             self.load_model(str(ckpt_path))
             output_dir = ckpt_path.parent / "smaps"
             
@@ -193,6 +196,16 @@ class Cam(ABC):
                     true_label=dataset.labels[image_id], 
                     output_dir=str(output_dir)
                 )
+
+    def create_smap_dirs(
+        self,
+        results_dir
+    ) -> None:
+        os.mkdir(smap_dir := results_dir / 'smaps')
+        os.mkdir(smap_dir / 'TP')
+        os.mkdir(smap_dir / 'FN')
+        os.mkdir(smap_dir / 'TN')
+        os.mkdir(smap_dir / 'FP')
 
 
 class CamCNN(Cam):
@@ -305,7 +318,7 @@ def plot_smaps(
 
     Args:
         cfg:    Global configuration values, ConfigCNN or ConfigViT.
-        params: Grad-cam parameters.
+        params: Grad-CAM parameters.
     """
     cam_cls = cam_for(cfg)
     cam = cam_cls()

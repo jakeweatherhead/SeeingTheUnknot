@@ -244,20 +244,25 @@ class Trial:
 
         return scheduler
 
-    def _run_tests(self) -> None:
-        ckpt_paths: list[Path] = model_utils.ckpt_paths(self.trial_dir)
+    def _run_tests(
+        self,
+        trial_dir: Path | None,
+        results_json: Path
+    ) -> None:
+        ckpt_paths: list[Path] = model_utils.ckpt_paths(trial_dir)
 
-        grad_cam_params: dict = {
+        gc_params: dict = {
             "dataset": self.datasets['test'],
             "ckpt_paths": ckpt_paths
         }
 
-        # cam_utils.generate_saliency_maps( # NOTE: smaps will be created locally after run completion
-        #     self.config, 
-        #     **grad_cam_params
-        # )
+        cam_utils.plot_smaps(
+            self.config, 
+            **gc_params
+        )
 
         for ckpt_path in ckpt_paths:
+            ckpt_name = Path(ckpt_path.name)
             model: Module = model_utils.load_model(self.model, ckpt_path)
             test_result: EvalResult = evaluate(
                 model=model,
@@ -267,11 +272,11 @@ class Trial:
             )
             
             utils.log_results(
-                results_json=self.json_f, 
+                results_json=results_json, 
                 train_results=None, 
-                eval_results=test_result
+                eval_results=[test_result],
+                ckpt_name=ckpt_name
             )
-
 
     def _get_device(self) -> device:
         """

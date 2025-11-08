@@ -64,7 +64,8 @@ def safe_divide(
 def log_results(
     results_json: Path,
     train_results: list[TrainResult],
-    eval_results: list[EvalResult]
+    eval_results: list[EvalResult],
+    ckpt_name: str = None
 ) -> None:
     if train_results and len(train_results) == 1:
         log_epoch_results(
@@ -79,7 +80,8 @@ def log_results(
             results_json=results_json, 
             train_results=None, 
             eval_results=eval_results, 
-            epoch_id=C.NUM_EPOCHS+1
+            epoch_id=None,
+            ckpt_name=ckpt_name
         )
 
     else:
@@ -98,13 +100,14 @@ def log_epoch_results(
     results_json: Path,
     train_results: list | None, 
     eval_results: list,
-    epoch_id: int,
+    epoch_id: int | None,
+    ckpt_name: str | None
 ) -> None:
     with open(results_json, 'r') as f_in:
         data = json.load(f_in)
 
     root: dict  = data['results']
-    label: str  = f'epoch_{epoch_id}' if train_results else 'test'
+    label: str  = f'epoch_{epoch_id}' if train_results else ckpt_name
     epoch: dict = root.setdefault(label, {})
 
     if train_results:

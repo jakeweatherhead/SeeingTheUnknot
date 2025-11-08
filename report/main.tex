@@ -15,7 +15,7 @@
 
 \noindent
 The CNN (88M params) and ViT (86M params) were fine-tuned on a new dataset $\mathcal{D}$ comprising unknot $\mathcal{U}$ and non-trivial knot
-$\mathcal{K}$ diagrams partitioned into three disjoint data splits $S := \{$train, test, val$\}$, where:\\
+$\mathcal{K}$ diagrams partitioned into three disjoint data splits $S := \{$train, val, test$\}$, where:\\
 
 \[
 \begin{gathered}
@@ -49,7 +49,17 @@ Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ for the best-pe
 % Here, add the test accuracy by crossing count.
 
 \subsection*{CNN* True Positives: True Unknots Predicted as Unknots}
+
+
+
 \subsection*{CNN* False Negatives: True Unknots Predicted as Knots}
+\vspace{-1em}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/cnn/FN/cnn-fn.pdf}
+   \label{fig:cnn-fn}
+\end{figure}
+\vspace{-1em}
 \subsection*{CNN* True Negatives: True Knots Predicted as Knots}
 \subsection*{CNN* False Positives: True Knots Predicted as Unknots}
 
