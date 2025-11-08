@@ -49,15 +49,13 @@ CNN* and ViT* denote the models with the highest test classification accuracies.
 
 \begin{figure}[H]
    \centering
-   \includegraphics[width=1\textwidth]{/home/jake/Personal/SeeingTheUnknot/report/acc-by-nc.png}
+   \includegraphics[width=0.9\textwidth]{/home/jake/Personal/SeeingTheUnknot/report/acc-by-nc.png}
 \end{figure}
-
-\newpage
 
 
 \section*{CNN* Saliency Maps}
 
-Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ from the CNN with the highest test accuracy, CNN*.
+A sample of CNN* saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CNN* TP
@@ -110,32 +108,66 @@ Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ from the CNN wi
    \caption{Of the $28{,}000$ non-trivial knot diagrams in $\mathcal{D}_{test}$, CNN* produced $980$ false positives.}
    \label{fig:cnn-fp}
 \end{figure}
-
-\newpage
 \section*{ViT* Saliency Maps}
 
-Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ from the ViT with the highest test accuracy, ViT*.
-% Here, add the test accuracy by crossing count.
-
+A sample of ViT* saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ViT* TP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{ViT TP: True Unknots Predicted as Unknots}
+\subsection*{True Positives: Unknots Predicted as Unknots}
+\vspace{-1.8em}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/vit/TP/vit-tp.pdf}
+   \captionsetup{skip=0pt}
+   \caption{Of the $28{,}000$ unknot diagrams in $\mathcal{D}_{test}$, ViT* produced $25{,}630$ true positives.}
+   \label{fig:vit-fn}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ViT* FN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{ViT FN: True Unknots Predicted as Knots}
+\subsection*{False Negatives: Unknots Predicted as Non-Trivial}
+\vspace{-1.8em}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/vit/FN/vit-fn.pdf}
+   \captionsetup{skip=0pt}
+   \caption{Of the $28{,}000$ unknot diagrams in $\mathcal{D}_{test}$, ViT* produced $2{,}370$ false negatives.}
+   \label{fig:vit-fn}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ViT* TN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{ViT TN: True Knots Predicted as Knots}
+\subsection*{True Negatives: Non-Trivials Predicted as Non-Trivial}
+\vspace{-1.8em}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/vit/TN/vit-tn.pdf}
+   \captionsetup{skip=0pt}
+   \caption{Of the $28{,}000$ non-trivial knot diagrams in $\mathcal{D}_{test}$, ViT* produced $24{,}252$ true negatives.}
+   \label{fig:vit-fn}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ViT* FP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{ViT FP: True Knots Predicted as Unknots}
+\subsection*{False Positives: Non-Trivials Predicted as Unknots}
+\vspace{-1.8em}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/vit/FP/vit-fp.pdf}
+   \captionsetup{skip=0pt}
+   \caption{Of the $28{,}000$ non-trivial knot diagrams in $\mathcal{D}_{test}$, ViT* produced $3{,}748$ false positives.}
+   \label{fig:vit-fp}
+\end{figure}
+
+\section*{Further Evidence of Learning}
+
+Let $m_{v}$ denote checkpoint model $m \in \{\text{CNN}, \text{ViT}\}$ with validation accuracy $v$. The figures below are examples
+of a model $m$ initially misclassifying a knot diagram $d \in \mathcal{D}_{test}$ later learning to correctly classify $d$.
+Let $p$ and $t$ respectively denote the predicted and true class of $d$ given by model $m_v$. 
 
 \end{document}
