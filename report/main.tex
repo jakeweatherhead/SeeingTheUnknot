@@ -1,5 +1,5 @@
 \documentclass[11pt]{article}
-\usepackage[a4paper, top=0.15in, bottom=0.6in, left=0.6in, right=0.6in]{geometry}
+\usepackage[a4paper, top=0.5in, bottom=0.6in, left=0.6in, right=0.6in]{geometry}
 
 \usepackage{sectsty}
 \usepackage{graphicx}
@@ -9,8 +9,7 @@
 
 \title{ \bf Results: [20, 35] Crossings }
 \author{ Jake Weatherhead }
-\date{\today}
-
+\date{}
 \begin{document}
 \maketitle	
 \vspace{-1em}
@@ -167,8 +166,8 @@ A sample of ViT* saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}
 \section*{Further Evidence of Learning}
 
 Let $m_{v}$ denote checkpoint model $m \in \{\text{CNN}, \text{ViT}\}$ with validation accuracy $v$. The figures below are examples
-of a model $m$ initially misclassifying a knot diagram $d \in \mathcal{D}_{test}$ later learning to correctly classify $d$.
-Let $p$ and $t$ respectively denote the predicted and true class of $d$ as given by model $m_v$. 
+of a model $m$ initially misclassifying a knot diagram $d \in \mathcal{D}_{test}$, later learning to correctly classify $d$.
+Let $p$ and $t$ respectively denote the predicted and true triviality of $d$ as given by model $m_v$. 
 
 \begin{figure}[H]
    \centering
