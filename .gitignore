@@ -2,6 +2,7 @@
 *.pyc
 uv.lock
 .venv
+runs/
 knot_data/pd/GoogleDeepmind_hard_unknots.csv
 knot_data/pd/SeeingTheUnknot_non_trivial_knots.json
 knot_data/pd/SeeingTheUnknot_unknots.json
