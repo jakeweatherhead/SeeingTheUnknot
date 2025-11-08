@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1762597291.27019 "/home/jake/Personal/SeeingTheUnknot/report/main.tex" "main.pdf" "main" 1762597291.50133 0
+["pdflatex"] 1762600958.88179 "/home/jake/Personal/SeeingTheUnknot/report/main.tex" "main.pdf" "main" 1762600959.39151 0
   "/etc/texmf/web2c/texmf.cnf" 1753116507.81942 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/jake/Personal/SeeingTheUnknot/report/main.tex" 1762597291.10802 2651 571008b87ef32a1cda1ea393bdcf46a9 ""
+  "/home/jake/Personal/SeeingTheUnknot/report/main.tex" 1762600958.76849 2957 add8a6f4fbea90abf00266adf465706e ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -54,10 +54,12 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1756146444.83601 5349216 bf3a80e68d946c7acd95ff030fd9bb63 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1756146454 6831141 06d02cba60c4ddc314f33d70e3bd50a7 ""
-  "main.aux" 1762597291.47002 219 dededd15c39a13c030a6d9551663486a "pdflatex"
-  "main.tex" 1762597291.10802 2651 571008b87ef32a1cda1ea393bdcf46a9 ""
+  "main.aux" 1762600959.36049 102 2bb79bb08c5c09936d3f2efc965f6536 "pdflatex"
+  "main.tex" 1762600958.76849 2957 add8a6f4fbea90abf00266adf465706e ""
+  "tikz/NOV-MON-10/cnn-lc.png" 1762599617.00469 92222 10838028ed135b11a747ea50b9bae3e4 ""
   "tikz/NOV-MON-10/cnn/FN/cnn-fn.pdf" 1762596762.45944 73183 8e3446266cee36ba48333e0f2fe77ba6 ""
-  "tikz/NOV-MON-10/example-diagrams.pdf" 1762526049.55005 143089 5c3d7c1b1acbd0d4dcdcbb863862c870 ""
+  "tikz/NOV-MON-10/cnn/FP/cnn-fp.pdf" 1762598020.9507 66393 e1450a80e736be7aaffc10a2d6b75868 ""
+  "tikz/NOV-MON-10/vit-lc.png" 1762599823.23317 101781 4593445a12f82774e469e02003ce4317 ""
   (generated)
   "main.aux"
   "main.log"

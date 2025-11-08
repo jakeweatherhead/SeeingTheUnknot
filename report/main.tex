@@ -1,5 +1,5 @@
 \documentclass[11pt]{article}
-\usepackage[a4paper, top=0.3in, bottom=0.9in, left=0.6in, right=0.6in]{geometry}
+\usepackage[a4paper, top=0.15in, bottom=0.9in, left=0.6in, right=0.6in]{geometry}
 
 \usepackage{sectsty}
 \usepackage{graphicx}
@@ -25,21 +25,20 @@ $\mathcal{K}$ diagrams partitioned into three disjoint data splits $S := \{$trai
 |\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 0.1 \cdot |\mathcal{D}| \; = \; 56{,}000 \text{ diagrams}, \\[0.5em]
 \text{where } \; \forall s \in S, \;\, s \in \; \mathcal{U}_s \, \cup \, \mathcal{K}_s \; \text{ and } \; |\mathcal{U}_s| = |\mathcal{K}_s|. \\[0.5em]
 \end{gathered}
-\]\\
-
+\]\\[0.5em]
 
 \noindent
 Each split contained knot diagrams for every crossing count $n \in N := \{20, \, 21, \, \ldots \,, \,35 \}$.
 For all distinct $p, q \in N$, each split contained an equal number of $p$ and $q$-crossing unknot and non-trivial knot diagrams.
 
 \section*{Learning Curves}
-
+\vspace{-1.3em}
 \begin{figure}[H]
    \centering
-   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/example-diagrams.pdf}
-   \caption{TBC}
-   \label{fig:examples-nov-mon}
+   \includegraphics[width=0.59\textwidth]{/home/jake/Personal/SeeingTheUnknot/report/tikz/NOV-MON-10/cnn-lc.png}
+   \includegraphics[width=0.59\textwidth]{/home/jake/Personal/SeeingTheUnknot/report/tikz/NOV-MON-10/vit-lc.png}
 \end{figure}
+\vspace{-2em}
 
 \newpage
 \section*{CNN* Saliency Maps}
@@ -60,8 +59,16 @@ Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ for the best-pe
    \label{fig:cnn-fn}
 \end{figure}
 \vspace{-1em}
+
 \subsection*{CNN* True Negatives: True Knots Predicted as Knots}
 \subsection*{CNN* False Positives: True Knots Predicted as Unknots}
+\vspace{-1em}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/cnn/FP/cnn-fp.pdf}
+   \label{fig:cnn-fp}
+\end{figure}
+\vspace{-1em}
 
 \newpage
 \section*{ViT* Saliency Maps}
