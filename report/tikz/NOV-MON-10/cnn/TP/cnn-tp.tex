@@ -1,0 +1,21 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{amsmath,graphicx}
+\usetikzlibrary{matrix}
+
+\begin{document}
+  \begin{tikzpicture}
+    \newcommand{\imgw}{0.13\textwidth}
+
+    \matrix (m) [matrix of nodes, row sep=-0.5mm, column sep=-1.5mm]
+    {
+      \node{\includegraphics[width=\imgw]{U_35_15062_zoom2.0_rot308.9_T_UNKNOT_P_1_C_0.945.jpg}}; &
+      \node{\includegraphics[width=\imgw]{U_35_17064_zoom1.7_rot141.0_T_UNKNOT_P_1_C_0.944.jpg}}; &
+      \node{\includegraphics[width=\imgw]{U_35_17212_zoom1.7_rot211.3_T_UNKNOT_P_1_C_0.945.jpg}}; &
+      \node{\includegraphics[width=\imgw]{U_35_3682_zoom1.5_rot65.1_T_UNKNOT_P_1_C_0.946.jpg}}; &
+      \node{\includegraphics[width=\imgw]{U_34_14407_zoom1.8_rot109.3_T_UNKNOT_P_1_C_0.946.jpg}}; &
+      \node{\includegraphics[width=\imgw]{U_35_14141_zoom1.7_rot89.7_T_UNKNOT_P_1_C_0.944.jpg}}; &
+      \node{\includegraphics[width=\imgw]{U_35_14554_zoom1.6_rot249.2_T_UNKNOT_P_1_C_0.945.jpg}}; \\
+    };
+  \end{tikzpicture}
+\end{document}

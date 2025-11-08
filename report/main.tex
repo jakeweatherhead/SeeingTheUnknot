@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{float}
+\usepackage{caption}
 
 \title{ \bf Results: [20, 35] Crossings }
 \author{ Jake Weatherhead }
@@ -43,45 +44,89 @@ For all distinct $p, q \in N$, each split contained an equal number of $p$ and $
 \newpage
 \newgeometry{a4paper, top=0.9in, bottom=0.9in, left=0.6in, right=0.6in}
 
-\section*{Test Accuracy by Crossing Count}
+
+
 \section*{CNN* Saliency Maps}
 
-Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ for the best-performing CNN (CNN*).
+Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ from the CNN with the highest test accuracy, CNN*.
 
-% Here, add the test accuracy by crossing count.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CNN* TP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{True Positives: Unknots Predicted as Unknots}
+\vspace{-1.8em}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/cnn/TP/cnn-tp.pdf}
+   \captionsetup{skip=0pt}
+   \caption{Of the $28{,}000$ unknot diagrams in $\mathcal{D}_{test}$, CNN* produced $27{,}677$ true positives.}
+   \label{fig:cnn-fn}
+\end{figure}
 
-\subsection*{CNN* True Positives: True Unknots Predicted as Unknots}
-
-
-
-\subsection*{CNN* False Negatives: True Unknots Predicted as Knots}
-\vspace{-1em}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CNN* FN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{False Negatives: Unknots Predicted as Non-Trivial}
+\vspace{-1.8em}
 \begin{figure}[H]
    \centering
    \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/cnn/FN/cnn-fn.pdf}
+   \captionsetup{skip=0pt}
+   \caption{Of the $28{,}000$ unknot diagrams in $\mathcal{D}_{test}$, CNN* produced 323 false negatives.}
    \label{fig:cnn-fn}
 \end{figure}
-\vspace{-1em}
 
-\subsection*{CNN* True Negatives: True Knots Predicted as Knots}
-\subsection*{CNN* False Positives: True Knots Predicted as Unknots}
-\vspace{-1em}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CNN* TN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{True Negatives: Non-Trivials Predicted as Non-Trivial}
+\vspace{-1.8em}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/cnn/TN/cnn-tn.pdf}
+   \captionsetup{skip=0pt}
+   \caption{Of the $28{,}000$ non-trivial knot diagrams in $\mathcal{D}_{test}$, CNN* produced $27{,}020$ true negatives.}
+   \label{fig:cnn-fn}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CNN* FP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{False Positives: Non-Trivials Predicted as Unknots}
+\vspace{-1.8em}
 \begin{figure}[H]
    \centering
    \includegraphics[width=1\textwidth]{tikz/NOV-MON-10/cnn/FP/cnn-fp.pdf}
+   \captionsetup{skip=0pt}
+   \caption{Of the $28{,}000$ non-trivial knot diagrams in $\mathcal{D}_{test}$, CNN* produced $980$ false positives.}
    \label{fig:cnn-fp}
 \end{figure}
-\vspace{-1em}
 
 \newpage
 \section*{ViT* Saliency Maps}
 
-Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ for the best-performing ViT (ViT*).
+Saliency maps for knot diagrams in $\mathcal{D}_{\mathrm{test}}$ from the ViT with the highest test accuracy, ViT*.
 % Here, add the test accuracy by crossing count.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ViT* TP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{ViT TP: True Unknots Predicted as Unknots}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ViT* FN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{ViT FN: True Unknots Predicted as Knots}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ViT* TN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{ViT TN: True Knots Predicted as Knots}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ViT* FP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{ViT FP: True Knots Predicted as Unknots}
 
 \end{document}
