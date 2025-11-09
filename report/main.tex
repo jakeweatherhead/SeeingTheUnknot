@@ -6,29 +6,33 @@
 \usepackage{amsmath}
 \usepackage{float}
 \usepackage{caption}
+\usepackage{amssymb}
+
 
 \title{ \bf Results: [20, 35] Crossings }
 \author{ Jake Weatherhead }
 \date{}
 \begin{document}
 \maketitle	
-\vspace{-1em}
+\vspace{-1.5em}
 \noindent
 The CNN (88M params) and ViT (86M params) were fine-tuned on a new dataset $\mathcal{D}$ comprising unknot $\mathcal{U}$ and non-trivial knot
-$\mathcal{K}$ diagrams partitioned into three disjoint data splits $S := \{$train, val, test$\}$, where:\vspace{-0.2em}
+$\mathcal{K}$ diagrams partitioned into three mutually disjoint data splits, where:\vspace{-0.2em}
 
 \[
 \begin{gathered}
-\mathcal{D} \; = \; \biguplus_{s \in S} \mathcal{D}_s \\[0.5em]
-|\mathcal{D}| \; = \; 560{,}000 \,\text{ diagrams, } \\[0.5em]
-|\mathcal{D}_{\mathrm{train}}| \; = \; 0.8 \cdot |\mathcal{D}| \; = \; 448{,}000 \text{ diagrams,} \\[0.5em]
-|\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 0.1 \cdot |\mathcal{D}| \; = \; 56{,}000 \text{ diagrams}, \\[0.5em]
-\text{where } \; \forall s \in S, \;\, \mathcal{D}_{s} \in \; \mathcal{U}_s \, \cup \, \mathcal{K}_s \; \text{ and } \; |\mathcal{U}_s| = |\mathcal{K}_s|. \\[0.5em]
+S := \{\text{train, val, test}\}, \\[0.4em]
+\mathcal{D} \; = \; \biguplus_{s \in S} \mathcal{D}_s, \\[0.4em]
+|\mathcal{D}| \; = \; 560{,}000 \,\text{ diagrams, } \\[0.4em]
+|\mathcal{D}_{\mathrm{train}}| \; = \; 0.8 \cdot |\mathcal{D}| \; = \; 448{,}000 \text{ diagrams,} \\[0.4em]
+|\mathcal{D}_{\mathrm{val}}| \; = \; |\mathcal{D}_{\mathrm{test}}| \; = \; 0.1 \cdot |\mathcal{D}| \; = \; 56{,}000 \text{ diagrams}, \\[0.4em]
+\text{where } \; \forall s \in S, \;\, \mathcal{D}_{s} \in \; \mathcal{U}_s \, \cup \, \mathcal{K}_s \; \text{ and } \; |\mathcal{U}_s| = |\mathcal{K}_s|. \\[0.4em]
 \end{gathered}
 \]
 
 \noindent
-Each split contained knot diagrams for every crossing count $n \in N := \{20, \, 21, \, \ldots \,, \,35 \}$.
+% Each split contained knot diagrams for every crossing count $n \in N := \{20, \, 21, \, \ldots \,, \,35 \}$.
+Each split comprised knot diagrams for all crossing counts $n \in N := \{n\!\in\!\mathbb{Z} \mid 20 \leq n \leq 35 \}$.
 For all $x, y \in N$, $x \neq y$, each split in $S$ contained an equal number of $x$ and $y$-crossing unknot and non-trivial knot diagrams.
 
 \section*{Learning Curves}
@@ -45,7 +49,8 @@ For all $x, y \in N$, $x \neq y$, each split in $S$ contained an equal number of
 \section*{Test Accuracy by Crossing Count}
 
 Let CNN* and ViT* denote the models with the highest test classification accuracies. The test accuracy
-of CNN* is 97.673\%; the test accuracy of ViT* is 89.075\%.
+of CNN* is 97.673\% ($\mathcal{U}$$=$$98.846\%$, $\mathcal{K}$$=$$96.5\%$); the test accuracy of ViT* is 89.075\% 
+($\mathcal{U}$$=$$91.536\%$, $\mathcal{K}$$=$$86.614\%$).
 
 \begin{figure}[H]
    \centering
