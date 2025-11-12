@@ -40,7 +40,7 @@ def build_model(
         device: 'cpu' or 'gpu', device to use for PyTorch operations
     """
     try:
-        local_weights_path: Path = _get_local_weights_path(config)
+        local_weights_path: Path = _local_weights_path(config)
         use_local: bool = local_weights_path.exists() 
         
         model = timm.create_model(model_name=config.model_name, 
@@ -106,21 +106,21 @@ def ckpt_paths(
     results_dir: Path
 ) -> list[Path]:
     """
-    Returns a list of paths to all model checkpoint files saved in the current Trial.
+    Returns a list of Paths to all model checkpoint files saved in the current Trial.
     
     Args:
         results_dir: root directory of all model checkpoints saved in the current Trial.
     """
     return [f.resolve() for f in results_dir.glob("*/*.pth")]
 
-def _get_local_weights_path(
+def _local_weights_path(
     config: config.Config
 ) -> Path:
     """
     Returns a system Path to local, pretrained weights.
     
     Args:
-        config: global configuration option
+        config: global configuration values
     """
     return Path(
         config.timm_model_path, 
