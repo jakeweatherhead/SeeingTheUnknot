@@ -29,14 +29,14 @@ from schema.result import TrainResult, EvalResult
 
 def format_time_delta(secs: float) -> str:
     if secs <= 0:
-        return "0.00sec"
+        return "0.00 s"
     
     mins: int = int((secs % C.SECONDS_IN_HOUR) // C.SECONDS_IN_MINUTE)
-    secs: float = secs % C.SECONDS_IN_MINUTE
+    secs %= C.SECONDS_IN_MINUTE
 
     if mins > 0:
-        return f"{mins:02d}min {secs:05.2f}sec"
-    return f"{secs:05.2f}sec"
+        return f"{mins:02d} min {secs:05.2f} s"
+    return f"{secs:05.2f} s"
 
 def set_random_seeds(_) -> None:
     """Apply global seed to all components"""
