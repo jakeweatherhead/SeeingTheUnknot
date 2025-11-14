@@ -23,13 +23,10 @@ from pathlib import Path
 
 
 def main():
-    Trial()._run_tests(
-        trial_dir=Path('/home/jake/Personal/SeeingTheUnknot/runs/cnn/trial_06_NOV_2025_14:55:30'),
-        results_json=Path('/home/jake/Personal/SeeingTheUnknot/runs/cnn/trial_06_NOV_2025_14:55:30/trial_06_NOV_2025_14:55:30_results.json')
-    )
+    Trial().run()
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        raise Exception(f"Exiting with error: {e}")
+        raise Exception(f"Exiting SeeingTheUnknot with error: {e}")
