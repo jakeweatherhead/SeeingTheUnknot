@@ -20,7 +20,7 @@ from torchvision import transforms
 from torch.utils.data import Dataset
 
 class KnotDataset(Dataset):
-    """A PyTorch Dataset of two-dimensional knot diagrams and corresponding labels."""
+    """Dataset of two-dimensional knot diagrams with corresponding labels."""
     def __init__(
         self, 
         image_paths: list[str], 
