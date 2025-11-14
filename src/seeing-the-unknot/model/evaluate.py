@@ -24,6 +24,7 @@ import time
 from schema.result import TrainResult, EvalResult
 import constants.constant as C
 from utils import utils
+import torch.distributed as dist
 
 
 def evaluate(
@@ -86,6 +87,14 @@ def evaluate(
                 tn += (true_label, pred_label) == (K, K)
                 fp += (true_label, pred_label) == (K, U)
     
+    if dist.is_available() and dist.is_initialized():
+        counts = torch.tensor([tp, fn, tn, fp], dtype=torch.float64, device=device)
+        dist.all_reduce(counts, op=dist.ReduceOp.SUM)
+        tp = int(counts[0].item())
+        fn = int(counts[1].item())
+        tn = int(counts[2].item())
+        fp = int(counts[3].item())
+
     accuracy = ((tp + tn) / len(dataloader.dataset)) * 100
 
     precision   = utils.safe_divide(tp, tp + fp)

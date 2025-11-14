@@ -34,6 +34,8 @@ from model.evaluate import evaluate
 import constants.constant as C
 import time
 
+import torch.distributed as dist
+from torch.utils.data.distributed import DistributedSampler
 
 def train(
     model: Module,
@@ -54,7 +56,15 @@ def train(
 
     model.train()
 
+    is_dist = dist.is_available() and dist.is_initialized()
+    rank = dist.get_rank() if is_dist else 0
+    train_sampler = getattr(dataloaders.get('train'), 'sampler', None)
+    if isinstance(train_sampler, DistributedSampler):
+        train_sampler.set_epoch(0)
+
     for epoch_idx in range(1, C.NUM_EPOCHS + 1):
+        if isinstance(train_sampler, DistributedSampler):
+            train_sampler.set_epoch(epoch_idx)
         ts                = time.time()
         total_loss: float = 0.0
         n_correct: int    = 0
@@ -78,6 +88,15 @@ def train(
             total_loss   += loss.item() * images.size(0)
             n_correct    += torch.sum(predictions == labels.data).item()
             n_processed  += images.size(0)
+
+        if is_dist:
+            totals = torch.tensor(
+                [total_loss, n_correct, n_processed],
+                dtype=torch.float64,
+                device=device
+            )
+            dist.all_reduce(totals, op=dist.ReduceOp.SUM)
+            total_loss, n_correct, n_processed = totals.tolist()
 
         accs.append(acc := n_correct / n_train)
         losses.append(loss := total_loss / n_train)
@@ -103,11 +122,12 @@ def train(
             best_val_accuracy = val_result.accuracy
             patience = C.PATIENCE
 
-            model_utils.save_model(
-                model=model,
-                trial_dir=trial_dir,
-                metrics={'val_acc': best_val_accuracy},
-            )
+            if rank == 0:
+                model_utils.save_model(
+                    model=model,
+                    trial_dir=trial_dir,
+                    metrics={'val_acc': best_val_accuracy},
+                )
         else:
             patience -= 1
 
@@ -116,8 +136,9 @@ def train(
 
         scheduler.step()
 
-        with open(f'{trial_dir}/log.txt', "a") as f:
-            f.write(f"Epoch {epoch_idx}: Train Acc: {acc}, Val Acc: {val_result.accuracy}.\n")
+        if rank == 0:
+            with open(f'{trial_dir}/log.txt', "a") as f:
+                f.write(f"Epoch {epoch_idx}: Train Acc: {acc}, Val Acc: {val_result.accuracy}.\n")
 
 
     return train_results, val_results

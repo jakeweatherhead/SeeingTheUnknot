@@ -22,7 +22,9 @@ import random
 from pathlib import Path
 # import matplotlib.pyplot as plt
 
+import torch.distributed as dist
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 from torchvision import transforms
 import constants.constant as C
 from config import config
@@ -78,18 +80,26 @@ def create_dataloaders(
     config: config.Config,
     datasets: dict[str, KnotDataset]
 ) -> dict[str, DataLoader]:
+    is_dist = dist.is_available() and dist.is_initialized()
     common = {
         "batch_size": config.batch_size,
         "pin_memory": True,
         "num_workers": os.cpu_count(),
     }
 
-    dataloaders: dict[str, DataLoader] = {
-        split: DataLoader(
+    dataloaders: dict[str, DataLoader] = {}
+    for split in C.SPLITS:
+        sampler = DistributedSampler(
             datasets[split],
-            **{**common, "shuffle": (split == 'train')}
-        ) for split in C.SPLITS
-    }
+            shuffle=(split == 'train'),
+            drop_last=False
+        ) if is_dist else None
+        dataloaders[split] = DataLoader(
+            datasets[split],
+            sampler=sampler,
+            shuffle=(sampler is None and split == 'train'),
+            **common
+        )
     
     return dataloaders
 

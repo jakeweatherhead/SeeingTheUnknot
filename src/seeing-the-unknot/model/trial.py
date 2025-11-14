@@ -23,11 +23,13 @@ from dataclasses import replace
 import os
 import json
 import torch
+import torch.distributed as dist
 from torch import optim
 from torch import device
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.nn import Module
+from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 
 from schema.result import TrainResult, EvalResult
 from model.train import train
@@ -49,9 +51,13 @@ class Trial:
         self.criterion: Module                = self._get_criterion()
         self.splits: dict                     = self._get_splits()
         self.model: Module                    = model_utils.build_model(self.config, self.device)
+        if dist.is_available() and dist.is_initialized():
+            self.model = FSDP(self.model)
         self.datasets: Dict[str, KnotDataset] = data_utils.create_datasets(self.splits)
         self.dataloaders: dict                = data_utils.create_dataloaders(self.config, self.datasets)
-        self._create_results_json()
+        self.rank: int                        = dist.get_rank() if dist.is_available() and dist.is_initialized() else 0
+        if self.rank == 0:
+            self._create_results_json()
 
     def run(self) -> float:
         """
@@ -84,14 +90,16 @@ class Trial:
                 criterion=self.criterion
             )
 
-            with open(f'{self.trial_dir}/log.txt', "a") as f:
-                f.write(f"Epoch 0: Train Acc: {train_result.accuracy}, Val Acc: {val_result.accuracy}.\n")
+            if self.rank == 0:
+                with open(f'{self.trial_dir}/log.txt', "a") as f:
+                    f.write(f"Epoch 0: Train Acc: {train_result.accuracy}, Val Acc: {val_result.accuracy}.\n")
 
-            utils.log_results( # Log epoch zero results
-                results_json=self.json_f, 
-                train_results=[train_result], 
-                eval_results=[val_result]
-            )
+            if self.rank == 0:
+                utils.log_results(
+                    results_json=self.json_f, 
+                    train_results=[train_result], 
+                    eval_results=[val_result]
+                )
 
             train_results, val_results = train(
                 device=self.device,
@@ -103,13 +111,15 @@ class Trial:
                 trial_dir=self.trial_dir
             )
 
-            utils.log_results(
-                results_json=self.json_f, 
-                train_results=train_results, 
-                eval_results=val_results
-            )
+            if self.rank == 0:
+                utils.log_results(
+                    results_json=self.json_f, 
+                    train_results=train_results, 
+                    eval_results=val_results
+                )
 
-            self._run_tests()
+            if self.rank == 0:
+                self._run_tests()
 
         except Exception as e:
             raise Exception(f"Error in Trial: {e}") 
@@ -258,7 +268,7 @@ class Trial:
         # )
 
         for ckpt_path in ckpt_paths:
-            model: Module = model_utils.load_model(self.model, ckpt_path)
+            model: Module = model_utils.load_model(self.model, Path(ckpt_path))
             test_result: EvalResult = evaluate(
                 model=model,
                 dataloader=self.dataloaders['test'],
@@ -274,13 +284,20 @@ class Trial:
 
 
     def _get_device(self) -> device:
-        """
-        Initializes the device on which the model will be fine-tuned.
-        Prefers CUDA GPU but defaults to CPU if a CUDA GPU is not available.
-        """
-        return device(
-            "cuda" if torch.cuda.is_available() else "cpu"
-        )
+        use_cuda = torch.cuda.is_available()
+        world_size = int(os.environ.get("WORLD_SIZE", "1"))
+        if use_cuda and world_size > 1 and dist.is_available() and not dist.is_initialized():
+            dist.init_process_group(backend="nccl")
+            local_rank = int(os.environ.get("LOCAL_RANK", "0"))
+            torch.cuda.set_device(local_rank)
+            return device(f"cuda:{local_rank}")
+        if use_cuda:
+            local_rank = int(os.environ.get("LOCAL_RANK", "0"))
+            if local_rank < torch.cuda.device_count():
+                torch.cuda.set_device(local_rank)
+                return device(f"cuda:{local_rank}")
+            return device("cuda")
+        return device("cpu")
     
     def _get_criterion(self) -> Module:
         return torch.nn.CrossEntropyLoss(

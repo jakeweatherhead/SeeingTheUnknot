@@ -18,6 +18,9 @@
 import torch
 from torch import device
 from torch.nn import Module, Linear
+import torch.distributed as dist
+from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
+from torch.distributed.fsdp import StateDictType, FullStateDictConfig
 
 from datetime import datetime
 from pathlib import Path
@@ -36,8 +39,8 @@ def build_model(
     else, load pretrained weights from a local directory.
     
     Args:
-        config: global configuration set
-        device: 'cpu' or 'gpu', device to use for PyTorch operations
+        config: global configuration set.
+        device: 'cpu' or 'gpu', device to use for PyTorch operations.
     """
     try:
         local_weights_path: Path = _get_local_weights_path(config)
@@ -66,14 +69,27 @@ def save_model(
     Save model and return path to the newly saved weights.
     
     Args:
-        model      : PyTorch model instance
-        trial_dir: path to sweep/trial results directory
-        metrics    : contains validation accuracy of model to save
+        model:     PyTorch model instance.
+        trial_dir: path to sweep/trial results directory.
+        metrics:   contains validation accuracy of model to save.
     """
     try:
-        filename = f"val_acc{metrics['val_acc']:.3f}".replace('.', '_') + ".pth"
+        filename = f"val_acc{metrics['val_acc']:.3f}.pth"
         weights_path = trial_dir / filename
-        torch.save(model.state_dict(), weights_path)
+        is_dist = dist.is_available() and dist.is_initialized()
+        rank = dist.get_rank() if is_dist else 0
+        if is_dist and isinstance(model, FSDP):
+            with FSDP.state_dict_type(
+                model,
+                StateDictType.FULL_STATE_DICT,
+                FullStateDictConfig(rank0_only=True, offload_to_cpu=True)
+            ):
+                full_state = model.state_dict()
+            if rank == 0:
+                torch.save(full_state, weights_path)
+        else:
+            torch.save(model.state_dict(), weights_path)
+        return weights_path
         
     except Exception as e:
         error_msg = f"Model Utils: save_model() Error saving model: {e}"
@@ -81,22 +97,29 @@ def save_model(
 
 def load_model(
     model: Module, 
-    model_path: str
+    model_path: Path
 ) -> Module:
     """
-    Return model instance loaded with local pretrained weights
+    Return model instance loaded with local pretrained weights.
     
     Args:
-        model     : PyTorch model instance
-        model_path: path to pretrained weights
+        model:      PyTorch model instance.
+        model_path: Path to pretrained weights.
     """
     try:
-        model_path = Path(model_path)
         if not model_path.exists():
             raise FileNotFoundError(f"Model file not found: {model_path}")
         
         state_dict = torch.load(model_path, map_location='cpu')
-        model.load_state_dict(state_dict)
+        if dist.is_available() and dist.is_initialized() and isinstance(model, FSDP):
+            with FSDP.state_dict_type(
+                model,
+                StateDictType.FULL_STATE_DICT,
+                FullStateDictConfig(offload_to_cpu=True, rank0_only=False)
+            ):
+                model.load_state_dict(state_dict, strict=False)
+        else:
+            model.load_state_dict(state_dict)
         return model
         
     except Exception as e:
@@ -109,7 +132,7 @@ def ckpt_paths(
     Returns a list of paths to all model checkpoint files saved in the current Trial.
     
     Args:
-        results_dir: root directory of all model checkpoints saved in the current Trial.
+        results_dir: root directory of model checkpoints for current Trial.
     """
     return [f.resolve() for f in results_dir.glob("*/*.pth")]
 
@@ -120,7 +143,7 @@ def _get_local_weights_path(
     Returns a system Path to local, pretrained weights.
     
     Args:
-        config: global configuration option
+        config: global configuration option.
     """
     return Path(
         config.timm_model_path, 
@@ -139,8 +162,8 @@ def _classifier_head_mismatch(
     else False.
 
     Args:
-        model      : instance of a PyTorch model
-        num_classes: label space cardinality
+        model:       instance of a PyTorch model.
+        num_classes: label space cardinality.
     """
     return (hasattr(model, 'fc')                       # has fully-connected layer
             and isinstance(model.fc, Linear)           # fc layer is Linear
@@ -158,8 +181,8 @@ def _classifier_reset_required(
     else True.
 
     Args:
-        model      : instance of a PyTorch model
-        num_classes: label space cardinality
+        model:       instance of a PyTorch model.
+        num_classes: label space cardinality.
     """
     return not (hasattr(model, 'fc')                     
                 and isinstance(model.fc, Linear) 
@@ -170,11 +193,11 @@ def _load_local_weights(
     path: Path,
 ) -> None:
     """
-    Load and apply local, pretrained weights to model instance
+    Load and apply local, pretrained weights to model instance.
     
     Args:
-        model: PyTorch model instance
-        path : path to local, pretrained weights
+        model: PyTorch model instance.
+        path:  path to local, pretrained weights.
     """
     try:
         local_state_dict = torch.load(path, map_location='cpu')
@@ -201,8 +224,8 @@ def _adapt_classifier(
     matching the label space cardinality of two.
     
     Args:
-        model      : PyTorch model instance
-        num_classes: label space cardinality
+        model:       PyTorch model instance.
+        num_classes: label space cardinality.
     """
     try:
         if _classifier_head_mismatch(model, num_classes):
