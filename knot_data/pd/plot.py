@@ -8,7 +8,7 @@ import tempfile
 import multiprocessing as mp
 from PIL import Image
 from sage.knots.link import Link
-from spherogram import random_link
+from spherogram import Link as sLink
 
 try:
     LANCZOS = Image.Resampling.LANCZOS
