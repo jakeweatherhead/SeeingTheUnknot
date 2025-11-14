@@ -39,7 +39,7 @@ def format_time_delta(secs: float) -> str:
     return f"{secs:05.2f} s"
 
 def set_random_seeds(_) -> None:
-    """Apply global seed to all components"""
+    """Apply global seed to all components."""
     random.seed(C.GLOBAL_SEED)
     torch.manual_seed(C.GLOBAL_SEED)
     if torch.cuda.is_available():
@@ -68,30 +68,24 @@ def log_results(
     ckpt_name: str = None
 ) -> None:
     if train_results and len(train_results) == 1:
-        log_epoch_results(
-            results_json=results_json, 
-            train_results=train_results, 
-            eval_results=eval_results, 
-            epoch_id=0
-        )
+        log_epoch_results(results_json=results_json, 
+                          train_results=train_results, 
+                          eval_results=eval_results, 
+                          epoch_id=0)
     
-    elif not train_results: # => test results
-        log_epoch_results(
-            results_json=results_json, 
-            train_results=None, 
-            eval_results=eval_results, 
-            epoch_id=None,
-            ckpt_name=ckpt_name
-        )
+    elif not train_results: # i.e. test results
+        log_epoch_results(results_json=results_json, 
+                          train_results=None, 
+                          eval_results=eval_results, 
+                          epoch_id=None,
+                          ckpt_name=ckpt_name)
 
     else:
-        for e_id in range(1, C.NUM_EPOCHS):
-            log_epoch_results(
-                results_json=results_json, 
-                train_results=train_results, 
-                eval_results=eval_results, 
-                epoch_id=e_id
-            )
+        for epoch_id in range(1, C.NUM_EPOCHS):
+            log_epoch_results(results_json=results_json, 
+                              train_results=train_results, 
+                              eval_results=eval_results, 
+                              epoch_id=epoch_id)
 
 from pathlib import Path
 import json
