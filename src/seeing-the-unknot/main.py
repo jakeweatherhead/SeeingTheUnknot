@@ -19,7 +19,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from model.trial import Trial
-from pathlib import Path
 
 
 def main():
@@ -29,4 +28,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        raise Exception(f"Exiting SeeingTheUnknot with error: {e}")
+        raise Exception(f"Exiting with error: {e}")
