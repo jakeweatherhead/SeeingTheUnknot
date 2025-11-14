@@ -31,9 +31,7 @@ class KnotDataset(Dataset):
         self.labels: list[int] = labels
         self.transform: transforms.Compose = transform
 
-    def __len__(
-        self
-    ) -> int:
+    def __len__(self) -> int:
         return len(self.image_paths)
 
     def __getitem__(
