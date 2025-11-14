@@ -1,3 +1,5 @@
+runs/
+knot_data/
 .env
 *.pyc
 uv.lock
