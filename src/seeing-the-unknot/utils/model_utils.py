@@ -44,7 +44,7 @@ def build_model(
         use_local: bool = local_weights_path.exists() 
         
         model = timm.create_model(model_name=config.model_name, 
-                                  pretrained=(not use_local), # download weights if not locally present
+                                  pretrained=(not use_local), # download weights if not on local
                                   num_classes=config.num_classes)
 
         if use_local:
@@ -122,11 +122,9 @@ def _local_weights_path(
     Args:
         config: global configuration values
     """
-    return Path(
-        config.timm_model_path, 
-        config.model_name, 
-        config.timm_weights_filename
-    )
+    return Path(config.timm_model_path, 
+                config.model_name, 
+                config.timm_weights_filename)
 
 def _classifier_head_mismatch(
     model: Module, 
