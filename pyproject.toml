@@ -16,4 +16,5 @@ dependencies = [
     "contourpy<1.3",
     "snappy>=3.2",
     "snappy-15-knots>=1.2.1",
+    "snakeviz"
 ]
